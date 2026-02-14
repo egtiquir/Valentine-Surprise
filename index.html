@@ -298,10 +298,9 @@ text-align:center;
 <div class="envelope" id="envelope">
 <div class="flap"></div>
 <div class="seal" id="seal" onclick="breakSeal()">💝</div>
-
 <div class="letterContent">
 <p>
-(Your full letter stays here unchanged)
+(Your full original letter text here — unchanged)
 </p>
 <div style="text-align:center;">
 <button onclick="closeLetter()">Close 💕</button>
@@ -330,7 +329,144 @@ nowDate.getDate()+1,
 21,45,0,0
 ).getTime();
 
+const playlist=["song1.mp3","song2.mp3","song3.mp3"];
+
+const questions=[
+{q:"Quien Vive?",a:"cristo"},
+{q:"Y a su nombre",a:"gloria"},
+{q:"Where was our first quote on quote date? Don't forget the (-)",a:"innout"},
+{q:"What was the tv show that we spent hours watching?",a:"kingjulien"},
+{q:"Where were we headed when the playlist was created?",a:"sandiego"}
+];
+
+let currentSong=0;
+let musicStarted=false;
+let currentQuestion=0;
 let finalShown=false;
+
+/* PASSWORD */
+function checkPassword(){
+if(document.getElementById("passwordInput").value.toLowerCase()===correctPassword){
+document.getElementById("volumeModal").style.display="flex";
+}
+}
+
+/* PLAYLIST */
+function confirmVolume(){
+document.getElementById("volumeModal").style.display="none";
+startPlaylist();
+showIntro();
+}
+
+function startPlaylist(){
+if(musicStarted)return;
+musicStarted=true;
+const music=document.getElementById("bgMusic");
+music.src=playlist[currentSong];
+music.volume=0.3;
+music.play();
+music.addEventListener("ended",()=>{
+currentSong=(currentSong+1)%playlist.length;
+music.src=playlist[currentSong];
+music.play();
+});
+}
+
+/* INTRO */
+function showIntro(){
+document.getElementById("passwordSection").classList.add("hidden");
+document.getElementById("introSection").classList.remove("hidden");
+typeWriter();
+}
+
+function typeWriter(){
+const text="Before delivery can proceed... one important question must be answered.";
+const el=document.getElementById("typeText");
+el.innerHTML="";
+let i=0;
+(function type(){
+if(i<text.length){
+el.innerHTML+=text.charAt(i++);
+setTimeout(type,35);
+}
+})();
+}
+
+function startValentine(){
+document.getElementById("introSection").classList.add("hidden");
+document.getElementById("valentineSection").classList.remove("hidden");
+}
+
+document.getElementById("noBtn").addEventListener("mouseover",function(){
+this.style.position="absolute";
+this.style.left=Math.random()*70+"%";
+this.style.top=Math.random()*70+"%";
+});
+
+/* QUIZ */
+function sayYes(){
+document.getElementById("valentineSection").classList.add("hidden");
+document.getElementById("quizSection").classList.remove("hidden");
+loadQuestion();
+}
+
+function loadQuestion(){
+document.getElementById("questionText").innerText=questions[currentQuestion].q;
+}
+
+function checkAnswer(){
+const input=document.getElementById("answerInput").value
+.toLowerCase().replace(/[^a-z0-9]/g,"");
+
+if(input===questions[currentQuestion].a){
+document.getElementById("answerInput").value="";
+if(currentQuestion===questions.length-1){
+launchConfetti();
+playScanVideo();
+}else{
+currentQuestion++;
+loadQuestion();
+}
+}else{
+alert("Wrong answer cutie 😌");
+}
+}
+
+function launchConfetti(){
+for(let i=0;i<40;i++){
+const d=document.createElement("div");
+d.style.position="fixed";
+d.style.width="6px";
+d.style.height="6px";
+d.style.background="#ff4e8d";
+d.style.top="-10px";
+d.style.left=Math.random()*100+"%";
+document.body.appendChild(d);
+let fall=setInterval(()=>{d.style.top=(parseFloat(d.style.top)+5)+"px";},30);
+setTimeout(()=>{clearInterval(fall);d.remove();},1000);
+}
+}
+
+function playScanVideo(){
+const wrapper=document.getElementById("videoWrapper");
+const v=document.getElementById("scanVideo");
+wrapper.style.display="block";
+v.currentTime=0;
+v.play();
+v.onended=()=>{
+wrapper.style.display="none";
+showTracker();
+};
+}
+
+/* TRACKER */
+function showTracker(){
+document.getElementById("quizSection").classList.add("hidden");
+document.getElementById("trackerSection").classList.remove("hidden");
+document.getElementById("estimatedDate").innerText=
+"Estimated Delivery: "+new Date(deliveryTime).toLocaleString();
+updateProgress();
+}
 
 function updateProgress(){
 const now=new Date().getTime();
@@ -352,15 +488,15 @@ document.getElementById("finalOverlay").style.display="flex";
 return;
 }
 
-const totalDuration = 24*60*60*1000;
-const percent = Math.min(100 - (distance/totalDuration)*100,100);
+const totalDuration=24*60*60*1000;
+const percent=Math.min(100-(distance/totalDuration)*100,100);
 
 fill.style.width=percent+"%";
 car.style.left=(percent*0.92)+"%";
 
-if(percent < 40){
+if(percent<40){
 status.innerHTML="📦 Preparing Shipment…";
-}else if(percent < 80){
+}else if(percent<80){
 status.innerHTML="🚚 Out for Delivery…";
 }else{
 status.innerHTML="📬 Arriving Soon…";
@@ -374,6 +510,32 @@ minutes+"m "+seconds+"s remaining";
 }
 
 setInterval(updateProgress,1000);
+
+/* LETTER */
+function openLetter(){
+document.getElementById("letterModal").style.display="flex";
+}
+
+function closeLetter(){
+document.getElementById("letterModal").style.display="none";
+document.getElementById("envelope").classList.remove("open");
+document.getElementById("seal").style.display="flex";
+}
+
+function breakSeal(){
+document.getElementById("envelope").classList.add("open");
+document.getElementById("seal").style.display="none";
+}
+
+/* FLOATING HEARTS */
+setInterval(()=>{
+const h=document.createElement("div");
+h.innerHTML="💖";
+h.className="floating-heart";
+h.style.left=Math.random()*100+"%";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),6000);
+},1500);
 </script>
 
 </body>
