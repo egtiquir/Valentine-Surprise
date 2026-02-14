@@ -1,173 +1,321 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Be My Valentine ❤️</title>
-    <style>
-        body {
-            background: linear-gradient(to bottom right, #ff9a9e, #fad0c4);
-            font-family: Arial, sans-serif;
-            text-align: center;
-            padding: 50px;
-            color: white;
-        }
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Secure Valentine Delivery Portal</title>
 
-        .card {
-            background: rgba(255,255,255,0.2);
-            padding: 30px;
-            border-radius: 20px;
-            max-width: 500px;
-            margin: auto;
-            backdrop-filter: blur(10px);
-        }
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ff4e8d, #ff9a9e);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
 
-        button {
-            padding: 10px 20px;
-            border-radius: 10px;
-            border: none;
-            font-size: 16px;
-            margin: 10px;
-            cursor: pointer;
-        }
+.container {
+    background: white;
+    width: 95%;
+    max-width: 500px;
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    position: relative;
+}
 
-        input {
-            padding: 10px;
-            border-radius: 10px;
-            border: none;
-            margin: 10px;
-        }
+.logo {
+    font-weight: bold;
+    color: #ff4e8d;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
 
-        .hidden {
-            display: none;
-        }
+button {
+    padding: 10px 20px;
+    border-radius: 10px;
+    border: none;
+    background: #ff4e8d;
+    color: white;
+    cursor: pointer;
+    margin: 10px;
+    font-weight: bold;
+}
 
-        .heart {
-            font-size: 40px;
-            animation: pulse 1s infinite;
-        }
+input {
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    width: 80%;
+}
 
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-    </style>
+.hidden { display: none; }
+
+.progress-bar {
+    width: 100%;
+    background: #eee;
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.progress-fill {
+    height: 15px;
+    width: 0%;
+    background: #ff4e8d;
+    transition: width 0.5s ease;
+}
+
+.typewriter {
+    border-right: 2px solid #ff4e8d;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+.floating-heart {
+    position: fixed;
+    bottom: -20px;
+    font-size: 20px;
+    animation: floatUp 6s linear infinite;
+    color: rgba(255,255,255,0.6);
+}
+
+@keyframes floatUp {
+    from { transform: translateY(0); }
+    to { transform: translateY(-100vh); }
+}
+</style>
 </head>
 <body>
 
-<div class="card" id="passwordSection">
-    <h2>Enter Password 💖</h2>
-    <input type="password" id="passwordInput">
-    <button onclick="checkPassword()">Enter</button>
+<audio id="bgMusic" loop>
+    <source src="song.mp3" type="audio/mpeg">
+</audio>
+
+<div class="container">
+
+<div class="logo" onclick="adminTap()">SVP Secure Delivery</div>
+
+<!-- PASSWORD -->
+<div id="passwordSection">
+<h2>🔐 Secure Access</h2>
+<input type="password" id="passwordInput" placeholder="Enter Password">
+<br>
+<button onclick="checkPassword()">Access</button>
 </div>
 
-<div class="card hidden" id="valentineSection">
-    <div class="heart">❤️</div>
-    <h2>Will You Be My Valentine?</h2>
-    <button onclick="sayYes()">YES</button>
+<!-- INTRO -->
+<div id="introSection" class="hidden">
+<h2 class="typewriter" id="typeText"></h2>
+<br>
+<button onclick="startValentine()">Continue 💌</button>
 </div>
 
-<div class="card hidden" id="quizSection">
-    <h3 id="questionText"></h3>
-    <input type="text" id="answerInput">
-    <button onclick="checkAnswer()">Submit</button>
+<!-- VALENTINE -->
+<div id="valentineSection" class="hidden">
+<h2>Will you be my Valentine?</h2>
+<button onclick="sayYes()">YES 💘</button>
+<button id="noBtn">NO 😏</button>
 </div>
 
-<div class="card hidden" id="trackerSection">
-    <h2>🎁 Gift Arriving Soon</h2>
-    <p id="countdown"></p>
-    <input type="datetime-local" id="dateTimePicker">
-    <button onclick="startCountdown()">Set Delivery Time</button>
+<!-- QUIZ -->
+<div id="quizSection" class="hidden">
+<h2>Memory Verification</h2>
+<p id="questionText"></p>
+<input type="text" id="answerInput">
+<button onclick="checkAnswer()">Submit</button>
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill"></div>
+</div>
+</div>
+
+<!-- TRACKER -->
+<div id="trackerSection" class="hidden">
+<h2>📦 Shipment Activated</h2>
+<p><strong>Tracking #:</strong> <span id="trackingNumber"></span></p>
+<p>Status: Scanned at Los Angeles Facility</p>
+<p id="countdown"></p>
+<input type="datetime-local" id="dateTimePicker">
+<button onclick="startCountdown()">Set Delivery Time</button>
+</div>
+
 </div>
 
 <script>
-const correctPassword = "LOVE2026"; // Change this
+const correctPassword = "qwanisha";
 
 const questions = [
-    { q: "Where did we first meet?", a: "library" },
-    { q: "What was our first date location?", a: "beach" },
-    { q: "What’s my favorite thing about you?", a: "smile" },
-    { q: "What song reminds you of us?", a: "perfect" },
-    { q: "What’s our inside joke word?", a: "pineapple" }
+{ q: "Where did we first meet?", a: "library" },
+{ q: "First date location?", a: "beach" },
+{ q: "Our song?", a: "perfect" },
+{ q: "Favorite food together?", a: "tacos" },
+{ q: "Inside joke word?", a: "pineapple" }
 ];
 
-let currentQuestion = 0;
+let currentQuestion = parseInt(localStorage.getItem("currentQuestion")) || 0;
+let adminClicks = 0;
+let countdownInterval;
 
-function checkPassword() {
-    const input = document.getElementById("passwordInput").value;
-    if (input === correctPassword) {
-        document.getElementById("passwordSection").classList.add("hidden");
-        document.getElementById("valentineSection").classList.remove("hidden");
-        localStorage.setItem("unlocked", "true");
-    }
+/* PASSWORD (case insensitive) */
+function checkPassword(){
+    const input = document.getElementById("passwordInput").value.toLowerCase();
+    if(input === correctPassword){
+        localStorage.setItem("unlocked","true");
+        showIntro();
+        document.getElementById("bgMusic").play();
+    } else alert("Access Denied 😏");
 }
 
-function sayYes() {
+function showIntro(){
+    document.getElementById("passwordSection").classList.add("hidden");
+    document.getElementById("introSection").classList.remove("hidden");
+    typeWriter();
+}
+
+/* TYPEWRITER */
+function typeWriter(){
+    const text = "Before delivery can proceed... one important question must be answered.";
+    const element = document.getElementById("typeText");
+    element.innerHTML="";
+    let i = 0;
+    function typing(){
+        if(i < text.length){
+            element.innerHTML += text.charAt(i);
+            i++;
+            setTimeout(typing, 35);
+        }
+    }
+    typing();
+}
+
+function startValentine(){
+    document.getElementById("introSection").classList.add("hidden");
+    document.getElementById("valentineSection").classList.remove("hidden");
+}
+
+/* MOVING NO BUTTON */
+const noBtn = document.getElementById("noBtn");
+noBtn.addEventListener("mouseover", function(){
+    noBtn.style.position = "absolute";
+    noBtn.style.left = Math.random()*80 + "%";
+    noBtn.style.top = Math.random()*80 + "%";
+});
+
+function sayYes(){
+    localStorage.setItem("saidYes","true");
     document.getElementById("valentineSection").classList.add("hidden");
     document.getElementById("quizSection").classList.remove("hidden");
     loadQuestion();
-    localStorage.setItem("saidYes", "true");
 }
 
-function loadQuestion() {
+/* QUIZ */
+function loadQuestion(){
     document.getElementById("questionText").innerText = questions[currentQuestion].q;
+    document.getElementById("progressFill").style.width =
+    (currentQuestion/questions.length)*100 + "%";
 }
 
-function checkAnswer() {
+function checkAnswer(){
     const answer = document.getElementById("answerInput").value.toLowerCase();
-    if (answer === questions[currentQuestion].a) {
+    if(answer === questions[currentQuestion].a){
         currentQuestion++;
-        document.getElementById("answerInput").value = "";
-        if (currentQuestion < questions.length) {
+        localStorage.setItem("currentQuestion", currentQuestion);
+        document.getElementById("answerInput").value="";
+        if(currentQuestion < questions.length){
             loadQuestion();
         } else {
-            document.getElementById("quizSection").classList.add("hidden");
-            document.getElementById("trackerSection").classList.remove("hidden");
-            localStorage.setItem("completedQuiz", "true");
+            localStorage.setItem("completedQuiz","true");
+            showTracker();
         }
-    } else {
-        alert("Try again 💕");
+    } else alert("Wrong answer cutie 😌");
+}
+
+/* TRACKER */
+function showTracker(){
+    document.getElementById("quizSection").classList.add("hidden");
+    document.getElementById("trackerSection").classList.remove("hidden");
+
+    if(!localStorage.getItem("trackingNumber")){
+        const number = "SVP" + Math.floor(Math.random()*1000000000);
+        localStorage.setItem("trackingNumber", number);
+    }
+
+    document.getElementById("trackingNumber").innerText =
+    localStorage.getItem("trackingNumber");
+
+    if(localStorage.getItem("deliveryTime")){
+        startCountdown(true);
     }
 }
 
-function startCountdown() {
-    const targetDate = new Date(document.getElementById("dateTimePicker").value).getTime();
-    localStorage.setItem("deliveryTime", targetDate);
+function startCountdown(fromStorage=false){
+    let target;
+    if(fromStorage){
+        target = parseInt(localStorage.getItem("deliveryTime"));
+    } else {
+        target = new Date(document.getElementById("dateTimePicker").value).getTime();
+        localStorage.setItem("deliveryTime", target);
+    }
 
-    const timer = setInterval(function() {
+    clearInterval(countdownInterval);
+
+    countdownInterval = setInterval(function(){
         const now = new Date().getTime();
-        const distance = targetDate - now;
+        const distance = target-now;
 
-        if (distance <= 0) {
-            clearInterval(timer);
-            document.getElementById("countdown").innerHTML = "🎉 Your Gift Is Here!";
+        if(distance <= 0){
+            document.getElementById("countdown").innerHTML="🎉 DELIVERY COMPLETE!";
+            clearInterval(countdownInterval);
             return;
         }
 
-        const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-        const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+        const days = Math.floor(distance/(1000*60*60*24));
+        const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+        const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+        const seconds=Math.floor((distance%(1000*60))/1000);
 
-        document.getElementById("countdown").innerHTML =
-            hours + "h " + minutes + "m " + seconds + "s ";
-    }, 1000);
+        document.getElementById("countdown").innerHTML=
+        days+"d "+hours+"h "+minutes+"m "+seconds+"s";
+    },1000);
 }
 
-window.onload = function() {
-    if (localStorage.getItem("unlocked") === "true") {
-        document.getElementById("passwordSection").classList.add("hidden");
-        document.getElementById("valentineSection").classList.remove("hidden");
+/* ADMIN SECRET */
+function adminTap(){
+    adminClicks++;
+    if(adminClicks >= 5){
+        alert("Admin Mode Activated");
+        document.getElementById("trackerSection").classList.remove("hidden");
     }
-    if (localStorage.getItem("saidYes") === "true") {
+}
+
+/* FLOATING HEARTS */
+setInterval(()=>{
+    const heart=document.createElement("div");
+    heart.innerHTML="💖";
+    heart.className="floating-heart";
+    heart.style.left=Math.random()*100+"%";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),6000);
+},1500);
+
+/* RESTORE STATE */
+window.onload=function(){
+    if(localStorage.getItem("unlocked")){
+        showIntro();
+    }
+    if(localStorage.getItem("saidYes")){
+        document.getElementById("introSection").classList.add("hidden");
         document.getElementById("valentineSection").classList.add("hidden");
         document.getElementById("quizSection").classList.remove("hidden");
         loadQuestion();
     }
-    if (localStorage.getItem("completedQuiz") === "true") {
-        document.getElementById("quizSection").classList.add("hidden");
-        document.getElementById("trackerSection").classList.remove("hidden");
+    if(localStorage.getItem("completedQuiz")){
+        showTracker();
     }
-};
+}
 </script>
-
 </body>
 </html>
