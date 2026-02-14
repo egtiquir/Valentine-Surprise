@@ -479,10 +479,18 @@ document.getElementById("estimatedDate").innerText=
 updateProgress();
 }
 
+function updateProgress(){
+const now=new Date().getTime();
+const distance=deliveryTime-now;
 
 const fill=document.getElementById("progressFill");
 const car=document.getElementById("car");
 
+if(distance<=0){
+fill.style.width="100%";
+car.style.left="92%";
+document.getElementById("countdown").innerHTML="🎉 Delivered!";
+if(!finalShown){
 finalShown=true;
 document.getElementById("finalOverlay").style.display="flex";
 }
@@ -492,8 +500,8 @@ return;
 fill.style.width="50%";
 car.style.left="45%";
 
-Math.floor((distance%(1000*60*60))/(1000*60));
-Math.floor((distance%(1000*60))/1000);
+const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+const seconds=Math.floor((distance%(1000*60))/1000);
 
 document.getElementById("countdown").innerHTML=
 minutes+"m "+seconds+"s remaining";
