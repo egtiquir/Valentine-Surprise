@@ -479,18 +479,10 @@ document.getElementById("estimatedDate").innerText=
 updateProgress();
 }
 
-function updateProgress(){
-const now=new Date().getTime();
-const distance=deliveryTime-now;
 
 const fill=document.getElementById("progressFill");
 const car=document.getElementById("car");
 
-if(distance<=0){
-fill.style.width="100%";
-car.style.left="92%";
-document.getElementById("countdown").innerHTML="🎉 Delivered!";
-if(!finalShown){
 finalShown=true;
 document.getElementById("finalOverlay").style.display="flex";
 }
