@@ -257,12 +257,12 @@ text-align:center;
 <div class="progress-fill" id="progressFill"></div>
 <div class="car" id="car">🚗</div>
 <div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;">
-<span id="statusSelected">Gift Selected</span>
+<span id="statusSelected">Gift Awarded</span>
 <span id="statusRoute">On Route</span>
 <span id="statusDelivered">Delivered</span>
+</div>  
 </div>
-
-</div>
+    
 <p class="countdownText" id="countdown"></p>
 <button onclick="openLetter()">Open Sealed Letter 💌</button>
 </div>
@@ -305,7 +305,7 @@ LOVE YOU. ❤️<br><br>
 <div class="finalBox">
 <h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
 <p>Your gift has officially arrived…<br><br>
-But truthfully, the real gift has always been you. ❤️</p>
+I hoped yo enjoyed, I was typing this as you sat with jessica and you not fat you're BOOOtttyyyyyfullll... now chat gpt wrote the next part and its cringey so itll stay ....But truthfully, the real gift has always been you. ❤️</p>
 </div>
 </div>
 
@@ -452,8 +452,11 @@ document.getElementById("quizSection").classList.add("hidden");
 document.getElementById("trackerSection").classList.remove("hidden");
 document.getElementById("estimatedDate").innerText=
 "Estimated Delivery: "+new Date(deliveryTime).toLocaleString();
+
 updateProgress();
+setInterval(updateProgress, 1000);  // ← ADD THIS LINE
 }
+
 
 function updateProgress(){
 const now=new Date().getTime();
