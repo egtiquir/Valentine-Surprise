@@ -48,6 +48,27 @@ border:1px solid #ddd;
 width:85%;
 }
 
+/* Volume Modal */
+#volumeModal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:15;
+}
+
+.modalBox{
+background:white;
+padding:30px;
+border-radius:20px;
+text-align:center;
+}
+
 /* Video modal */
 #videoWrapper{
 position:fixed;
@@ -193,6 +214,16 @@ to{opacity:1;transform:scale(1);}
 
 </div>
 
+<!-- Volume Popup -->
+<div id="volumeModal">
+<div class="modalBox">
+<h3>🎵 Make Sure Your Volume Is Up</h3>
+<p>Trust me… you’ll want it on 😉</p>
+<button onclick="confirmVolume()">Okay 💕</button>
+</div>
+</div>
+
+<!-- Final Love Letter -->
 <div id="finalOverlay">
 <div class="finalBox">
 <h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
@@ -247,10 +278,15 @@ if(currentStage==="tracker"){showTracker();}
 
 function checkPassword(){
 if(document.getElementById("passwordInput").value.toLowerCase()===correctPassword){
+document.getElementById("volumeModal").style.display="flex";
+}
+}
+
+function confirmVolume(){
+document.getElementById("volumeModal").style.display="none";
 startPlaylist();
 showIntro();
 saveState("intro");
-}
 }
 
 function startPlaylist(){
@@ -315,9 +351,7 @@ const u=normalize(input.value);
 const c=normalize(questions[currentQuestion].a);
 
 if(u===c){
-
 input.value="";
-
 if(currentQuestion===questions.length-1){
 launchConfetti();
 playScanVideo();
@@ -326,7 +360,6 @@ currentQuestion++;
 saveState("quiz");
 loadQuestion();
 }
-
 }else{
 alert("Wrong answer cutie 😌");
 }
@@ -392,7 +425,6 @@ document.getElementById("finalOverlay").style.display="flex";
 
 setInterval(updateProgress,1000);
 
-/* Hearts */
 setInterval(()=>{
 const h=document.createElement("div");
 h.innerHTML="💖";
