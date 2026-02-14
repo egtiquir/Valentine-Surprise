@@ -360,6 +360,8 @@ showIntro();
 function startPlaylist(){
 if(musicStarted)return;
 musicStarted=true;
+localStorage.setItem("musicStarted","true");
+    
 const music=document.getElementById("bgMusic");
 music.src=playlist[currentSong];
 music.volume=0.3;
@@ -418,12 +420,15 @@ const input=document.getElementById("answerInput").value
 if(input===questions[currentQuestion].a){
 document.getElementById("answerInput").value="";
 if(currentQuestion===questions.length-1){
+localStorage.setItem("quizComplete","true");
 launchConfetti();
 playScanVideo();
 }else{
 currentQuestion++;
+localStorage.setItem("currentQuestion",currentQuestion);
 loadQuestion();
 }
+
 }else{
 alert("Wrong answer cutie 😌");
 }
@@ -542,6 +547,30 @@ function breakSeal(){
 document.getElementById("envelope").classList.add("open");
 document.getElementById("seal").style.display="none";
 }
+window.addEventListener("load", function(){
+
+    const savedQuestion = localStorage.getItem("currentQuestion");
+    const quizComplete = localStorage.getItem("quizComplete");
+
+    if(quizComplete === "true"){
+        showTracker();
+    }
+    else if(savedQuestion !== null){
+        currentQuestion = parseInt(savedQuestion);
+        document.getElementById("passwordSection").classList.add("hidden");
+        document.getElementById("quizSection").classList.remove("hidden");
+        loadQuestion();
+    }
+    // Resume music if it was previously started
+if(localStorage.getItem("musicStarted") === "true"){
+    document.body.addEventListener("click", function resumeMusic(){
+        startPlaylist();
+        document.body.removeEventListener("click", resumeMusic);
+    });
+}
+
+
+});
 
 setInterval(()=>{
 const h=document.createElement("div");
