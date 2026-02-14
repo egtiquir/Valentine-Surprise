@@ -69,7 +69,7 @@ border-radius:20px;
 text-align:center;
 }
 
-/* Video modal */
+/* Video */
 #videoWrapper{
 position:fixed;
 top:50%;
@@ -127,6 +127,79 @@ from{transform:translateY(0);}
 to{transform:translateY(-100vh);}
 }
 
+/* Envelope Modal */
+#letterModal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:25;
+}
+
+.envelope{
+width:300px;
+height:200px;
+background:#fff;
+position:relative;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+text-align:center;
+}
+
+.flap{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#ffe6ea;
+clip-path:polygon(0 0,100% 0,50% 60%);
+transition:transform 1s ease;
+transform-origin:top;
+}
+
+.envelope.open .flap{
+transform:rotateX(180deg);
+}
+
+.seal{
+width:60px;
+height:60px;
+background:#c1121f;
+border-radius:50%;
+position:absolute;
+top:70px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 5px 15px rgba(0,0,0,0.4);
+}
+
+.letterContent{
+display:none;
+padding:20px;
+font-size:14px;
+text-align:left;
+}
+
+.envelope.open .letterContent{
+display:block;
+}
+
+.closeLetterBtn{
+margin-top:10px;
+}
+
 /* Final overlay */
 #finalOverlay{
 position:fixed;
@@ -147,12 +220,6 @@ padding:40px;
 border-radius:20px;
 max-width:500px;
 text-align:center;
-animation:fadeIn 1.5s ease;
-}
-
-@keyframes fadeIn{
-from{opacity:0;transform:scale(0.95);}
-to{opacity:1;transform:scale(1);}
 }
 </style>
 </head>
@@ -210,238 +277,61 @@ to{opacity:1;transform:scale(1);}
 </div>
 
 <p id="countdown"></p>
-</div>
+
+<button onclick="openLetter()">Open Sealed Letter 💌</button>
 
 </div>
 
-<!-- Volume Popup -->
-<div id="volumeModal">
-<div class="modalBox">
-<h3>🎵 Make Sure Your Volume Is Up</h3>
-<p>Trust me… you’ll want it on 😉</p>
-<button onclick="confirmVolume()">Okay 💕</button>
+</div>
+
+<!-- Envelope Modal -->
+<div id="letterModal">
+<div class="envelope" id="envelope">
+<div class="flap"></div>
+
+<div class="seal" onclick="breakSeal()">💝</div>
+
+<div class="letterContent">
+<p>
+While your package makes its way to you…<br><br>
+So hiiii love its your grumpy boyfriend here, i wanted to say i love you and sorry for all the mispelled grammar
+  im rushing this a bit because of time, but wanted to write you a nice letter like youve done for me. So whats so great about katherine
+  hmmmmm where do i start for starters youre very energetic very enthusiatic about things and the best of all is how great you are in the christian life.
+  Also its awesome i got a smart girlfriend who can do so much reading and pass her classes even getting honors... its an honor to meet you ahhh but i digress
+  thank you for these past 3 years this is our 3rd valentines this ones a bit different because of our responsibilities but we make it work, LOVE YOU. ❤️<br><br>
+– Yours
+</p>
+
+<div style="text-align:center;">
+<button class="closeLetterBtn" onclick="closeLetter()">Close 💕</button>
+</div>
+
+</div>
 </div>
 </div>
 
-<!-- Final Love Letter -->
+<!-- Final Overlay -->
 <div id="finalOverlay">
 <div class="finalBox">
 <h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
-<p style="margin-top:20px;font-size:16px;line-height:1.6;">
-Your gift has officially arrived…<br><br>
-I loves you and hope you enjoyed, chatgpt wrote that the gift all along has been you, thought that was cute so I'll keep it. ❤️<br><br>
-Thank you for being you.<br>
-Happy Valentine’s Day.
-</p>
+<p>Your gift has officially arrived…<br><br>
+I hope you enjoyed love now chatgpt wrote the next part and its cringey so ill leave it....But truthfully, the real gift has always been you. ❤️</p>
 </div>
 </div>
 
 <script>
-const correctPassword="qwanisha";
-const deliveryTime=new Date("2026-02-13T21:30:00").getTime();
-
-const playlist=["song1.mp3","song2.mp3","song3.mp3"];
-
-const questions=[
-{q:"Quien Vive?",a:"cristo"},
-{q:"Y a su nombre",a:"gloria"},
-{q:"Where was our first quote on quote date? Don't forget the (-)",a:"in-n-out"},
-{q:"What was the tv show that we spent hours watching?",a:"king julien"},
-{q:"Where were we headed when the playlist was created?",a:"san diego"}
-];
-
-let currentSong=0;
-let musicStarted=false;
-let currentQuestion=parseInt(localStorage.getItem("questionIndex"))||0;
-let currentStage=localStorage.getItem("stage")||"password";
-let finalShown=false;
-
-function saveState(stage){
-localStorage.setItem("stage",stage);
-localStorage.setItem("questionIndex",currentQuestion);
+function openLetter(){
+document.getElementById("letterModal").style.display="flex";
 }
 
-function normalize(t){
-return t.toLowerCase().replace(/[^a-z0-9]/g,"").trim();
+function closeLetter(){
+document.getElementById("letterModal").style.display="none";
+document.getElementById("envelope").classList.remove("open");
 }
 
-/* ON LOAD */
-window.onload=function(){
-if(currentStage!=="password"){
-document.getElementById("volumeModal").style.display="flex";
-} else {
-document.getElementById("passwordSection").classList.remove("hidden");
+function breakSeal(){
+document.getElementById("envelope").classList.add("open");
 }
-};
-
-function checkPassword(){
-if(document.getElementById("passwordInput").value.toLowerCase()===correctPassword){
-document.getElementById("volumeModal").style.display="flex";
-}
-}
-
-function confirmVolume(){
-document.getElementById("volumeModal").style.display="none";
-startPlaylist();
-
-if(currentStage==="intro"){showIntro();}
-else if(currentStage==="valentine"){startValentine();}
-else if(currentStage==="quiz"){
-document.getElementById("passwordSection").classList.add("hidden");
-document.getElementById("quizSection").classList.remove("hidden");
-loadQuestion();
-}
-else if(currentStage==="tracker"){showTracker();}
-else{
-showIntro();
-saveState("intro");
-}
-}
-
-function startPlaylist(){
-if(musicStarted)return;
-musicStarted=true;
-const music=document.getElementById("bgMusic");
-music.src=playlist[currentSong];
-music.volume=0.3;
-music.play();
-music.addEventListener("ended",()=>{
-currentSong=(currentSong+1)%playlist.length;
-music.src=playlist[currentSong];
-music.play();
-});
-}
-
-function showIntro(){
-document.getElementById("passwordSection").classList.add("hidden");
-document.getElementById("introSection").classList.remove("hidden");
-typeWriter();
-}
-
-function typeWriter(){
-const text="Before delivery can proceed... one important question must be answered.";
-const el=document.getElementById("typeText");
-el.innerHTML="";
-let i=0;
-(function type(){
-if(i<text.length){
-el.innerHTML+=text.charAt(i++);
-setTimeout(type,35);
-}
-})();
-}
-
-function startValentine(){
-document.getElementById("introSection").classList.add("hidden");
-document.getElementById("valentineSection").classList.remove("hidden");
-saveState("valentine");
-}
-
-document.getElementById("noBtn").addEventListener("mouseover",function(){
-this.style.position="absolute";
-this.style.left=Math.random()*70+"%";
-this.style.top=Math.random()*70+"%";
-});
-
-function sayYes(){
-document.getElementById("valentineSection").classList.add("hidden");
-document.getElementById("quizSection").classList.remove("hidden");
-saveState("quiz");
-loadQuestion();
-}
-
-function loadQuestion(){
-document.getElementById("questionText").innerText=questions[currentQuestion].q;
-}
-
-function checkAnswer(){
-const input=document.getElementById("answerInput");
-const u=normalize(input.value);
-const c=normalize(questions[currentQuestion].a);
-
-if(u===c){
-input.value="";
-if(currentQuestion===questions.length-1){
-launchConfetti();
-playScanVideo();
-}else{
-currentQuestion++;
-saveState("quiz");
-loadQuestion();
-}
-}else{
-alert("Wrong answer cutie 😌");
-}
-}
-
-function launchConfetti(){
-for(let i=0;i<40;i++){
-const d=document.createElement("div");
-d.style.position="fixed";
-d.style.width="6px";
-d.style.height="6px";
-d.style.background="#ff4e8d";
-d.style.top="-10px";
-d.style.left=Math.random()*100+"%";
-document.body.appendChild(d);
-let fall=setInterval(()=>{d.style.top=(parseFloat(d.style.top)+5)+"px";},30);
-setTimeout(()=>{clearInterval(fall);d.remove();},1000);
-}
-}
-
-function playScanVideo(){
-const wrapper=document.getElementById("videoWrapper");
-const v=document.getElementById("scanVideo");
-wrapper.style.display="block";
-v.currentTime=0;
-v.play();
-v.onended=()=>{
-wrapper.style.display="none";
-showTracker();
-};
-}
-
-function showTracker(){
-document.getElementById("quizSection").classList.add("hidden");
-document.getElementById("trackerSection").classList.remove("hidden");
-saveState("tracker");
-updateProgress();
-}
-
-function updateProgress(){
-const now=new Date().getTime();
-const fill=document.getElementById("progressFill");
-const car=document.getElementById("car");
-
-if(now>=deliveryTime){
-fill.style.width="100%";
-car.style.left="92%";
-document.getElementById("countdown").innerHTML="🎉 Delivered!";
-showFinalOverlay();
-return;
-}
-
-fill.style.width="50%";
-car.style.left="45%";
-document.getElementById("countdown").innerHTML="On Route 🚗";
-}
-
-function showFinalOverlay(){
-if(finalShown) return;
-finalShown=true;
-document.getElementById("finalOverlay").style.display="flex";
-}
-
-setInterval(updateProgress,1000);
-
-setInterval(()=>{
-const h=document.createElement("div");
-h.innerHTML="💖";
-h.className="floating-heart";
-h.style.left=Math.random()*100+"%";
-document.body.appendChild(h);
-setTimeout(()=>h.remove(),6000);
-},1500);
 </script>
 
 </body>
