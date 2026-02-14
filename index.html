@@ -241,27 +241,23 @@ text-align:center;
 🎵 Now Playing: Dumptruck Playlist
 </div>
 
-<!-- PASSWORD -->
 <div id="passwordSection">
 <h2>🔐 Secure Access</h2>
 <input type="password" id="passwordInput">
 <button onclick="checkPassword()">Access</button>
 </div>
 
-<!-- INTRO -->
 <div id="introSection" class="hidden">
 <h2 id="typeText"></h2>
 <button onclick="startValentine()">Continue 💌</button>
 </div>
 
-<!-- VALENTINE -->
 <div id="valentineSection" class="hidden">
 <h2>Will you be my Valentine?</h2>
 <button onclick="sayYes()">YES 💘</button>
 <button id="noBtn">NO 😏</button>
 </div>
 
-<!-- QUIZ -->
 <div id="quizSection" class="hidden">
 <h2>Memory Verification</h2>
 <p id="questionText"></p>
@@ -270,7 +266,6 @@ text-align:center;
 <button onclick="checkAnswer()">Submit</button>
 </div>
 
-<!-- TRACKER -->
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Status</h2>
 
@@ -288,7 +283,6 @@ text-align:center;
 
 </div>
 
-<!-- Volume Popup -->
 <div id="volumeModal">
 <div class="modalBox">
 <h3>🎵 Make Sure Your Volume Is Up</h3>
@@ -296,11 +290,10 @@ text-align:center;
 </div>
 </div>
 
-<!-- Envelope -->
 <div id="letterModal">
 <div class="envelope" id="envelope">
 <div class="flap"></div>
-<div class="seal" onclick="breakSeal()">💝</div>
+<div class="seal" id="seal" onclick="breakSeal()">💝</div>
 
 <div class="letterContent">
 <p>
@@ -340,25 +333,31 @@ But truthfully, the real gift has always been you. ❤️</p>
 
 <script>
 const correctPassword="qwanisha";
-const deliveryTime=new Date("2026-02-13T21:30:00").getTime();
+
+/* Automatically set TODAY at 9:45 PM */
+const nowDate=new Date();
+const deliveryTime=new Date(
+nowDate.getFullYear(),
+nowDate.getMonth(),
+nowDate.getDate(),
+21,45,0,0
+).getTime();
 
 const playlist=["song1.mp3","song2.mp3","song3.mp3"];
 
 const questions=[
 {q:"Quien Vive?",a:"cristo"},
 {q:"Y a su nombre",a:"gloria"},
-{q:"Where was our first quote on quote date? Don't forget the (-)",a:"in-n-out"},
-{q:"What was the tv show that we spent hours watching?",a:"king julien"},
-{q:"Where were we headed when the playlist was created?",a:"san diego"}
+{q:"Where was our first quote on quote date? Don't forget the (-)",a:"innout"},
+{q:"What was the tv show that we spent hours watching?",a:"kingjulien"},
+{q:"Where were we headed when the playlist was created?",a:"sandiego"}
 ];
 
 let currentSong=0;
 let musicStarted=false;
 let currentQuestion=0;
-let currentStage="password";
 let finalShown=false;
 
-/* PASSWORD */
 function checkPassword(){
 if(document.getElementById("passwordInput").value.toLowerCase()===correctPassword){
 document.getElementById("volumeModal").style.display="flex";
@@ -426,10 +425,11 @@ document.getElementById("questionText").innerText=questions[currentQuestion].q;
 }
 
 function checkAnswer(){
-const input=document.getElementById("answerInput");
-if(input.value.toLowerCase().replace(/[^a-z0-9]/g,"")===
-questions[currentQuestion].a.replace(/[^a-z0-9]/g,"")){
-input.value="";
+const input=document.getElementById("answerInput").value
+.toLowerCase().replace(/[^a-z0-9]/g,"");
+
+if(input===questions[currentQuestion].a){
+document.getElementById("answerInput").value="";
 if(currentQuestion===questions.length-1){
 launchConfetti();
 playScanVideo();
@@ -472,8 +472,10 @@ showTracker();
 function showTracker(){
 document.getElementById("quizSection").classList.add("hidden");
 document.getElementById("trackerSection").classList.remove("hidden");
-document.getElementById("estimatedDate").innerText =
-"Estimated Delivery: " + new Date(deliveryTime).toLocaleString();
+
+document.getElementById("estimatedDate").innerText=
+"Estimated Delivery: "+new Date(deliveryTime).toLocaleString();
+
 updateProgress();
 }
 
@@ -498,13 +500,11 @@ return;
 fill.style.width="50%";
 car.style.left="45%";
 
-const days=Math.floor(distance/(1000*60*60*24));
-const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
 const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
 const seconds=Math.floor((distance%(1000*60))/1000);
 
 document.getElementById("countdown").innerHTML=
-days+"d "+hours+"h "+minutes+"m "+seconds+"s remaining";
+minutes+"m "+seconds+"s remaining";
 }
 
 setInterval(updateProgress,1000);
@@ -516,10 +516,12 @@ document.getElementById("letterModal").style.display="flex";
 function closeLetter(){
 document.getElementById("letterModal").style.display="none";
 document.getElementById("envelope").classList.remove("open");
+document.getElementById("seal").style.display="flex";
 }
 
 function breakSeal(){
 document.getElementById("envelope").classList.add("open");
+document.getElementById("seal").style.display="none";
 }
 
 setInterval(()=>{
