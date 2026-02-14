@@ -200,6 +200,7 @@ display:none;
 justify-content:center;
 align-items:center;
 z-index:20;
+transition: opacity 1s ease;  
 }
 .finalBox{
 background:white;
@@ -316,8 +317,8 @@ const nowDate=new Date();
 const deliveryTime=new Date(
 nowDate.getFullYear(),
 nowDate.getMonth(),
-nowDate.getDate()+1,
-21,45,0,0
+nowDate.getDate(),
+12,45,0,0
 ).getTime();
 
 const playlist=["song1.mp3","song2.mp3","song3.mp3"];
@@ -455,7 +456,6 @@ updateProgress();
 }
 
 function updateProgress(){
-function updateProgress(){
 const now=new Date().getTime();
 const distance=deliveryTime-now;
 
@@ -481,9 +481,24 @@ route.style.color="#ff4e8d";
 delivered.style.color="#ff4e8d";
 
 if(!finalShown){
-finalShown=true;
-document.getElementById("finalOverlay").style.display="flex";
+    finalShown = true;
+
+    const overlay = document.getElementById("finalOverlay");
+
+    overlay.style.display = "flex";
+    overlay.style.opacity = "1";
+
+    // Wait 5 seconds
+    setTimeout(() => {
+        overlay.style.opacity = "0";
+    }, 5000);
+
+    // After fade finishes, remove it
+    setTimeout(() => {
+        overlay.style.display = "none";
+    }, 6000);
 }
+
 return;
 }
 
