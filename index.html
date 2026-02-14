@@ -241,27 +241,23 @@ text-align:center;
 🎵 Now Playing: Dumptruck Playlist
 </div>
 
-<!-- PASSWORD -->
 <div id="passwordSection">
 <h2>🔐 Secure Access</h2>
 <input type="password" id="passwordInput">
 <button onclick="checkPassword()">Access</button>
 </div>
 
-<!-- INTRO -->
 <div id="introSection" class="hidden">
 <h2 id="typeText"></h2>
 <button onclick="startValentine()">Continue 💌</button>
 </div>
 
-<!-- VALENTINE -->
 <div id="valentineSection" class="hidden">
 <h2>Will you be my Valentine?</h2>
 <button onclick="sayYes()">YES 💘</button>
 <button id="noBtn">NO 😏</button>
 </div>
 
-<!-- QUIZ -->
 <div id="quizSection" class="hidden">
 <h2>Memory Verification</h2>
 <p id="questionText"></p>
@@ -270,7 +266,6 @@ text-align:center;
 <button onclick="checkAnswer()">Submit</button>
 </div>
 
-<!-- TRACKER -->
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Status</h2>
 
@@ -288,7 +283,6 @@ text-align:center;
 
 </div>
 
-<!-- Volume Popup -->
 <div id="volumeModal">
 <div class="modalBox">
 <h3>🎵 Make Sure Your Volume Is Up</h3>
@@ -296,11 +290,10 @@ text-align:center;
 </div>
 </div>
 
-<!-- Envelope -->
 <div id="letterModal">
 <div class="envelope" id="envelope">
 <div class="flap"></div>
-<div class="seal" onclick="breakSeal()">💝</div>
+<div class="seal" id="seal" onclick="breakSeal()">💝</div>
 
 <div class="letterContent">
 <p>
@@ -326,6 +319,7 @@ LOVE YOU. ❤️<br><br>
 <div style="text-align:center;">
 <button onclick="closeLetter()">Close 💕</button>
 </div>
+
 </div>
 </div>
 </div>
@@ -340,7 +334,7 @@ But truthfully, the real gift has always been you. ❤️</p>
 
 <script>
 const correctPassword="qwanisha";
-const deliveryTime=new Date("2026-02-13T21:30:00").getTime();
+const deliveryTime=new Date("2026-02-13T21:45:00").getTime(); // 9:45 PM
 
 const playlist=["song1.mp3","song2.mp3","song3.mp3"];
 
@@ -355,126 +349,14 @@ const questions=[
 let currentSong=0;
 let musicStarted=false;
 let currentQuestion=0;
-let currentStage="password";
 let finalShown=false;
 
-/* PASSWORD */
-function checkPassword(){
-if(document.getElementById("passwordInput").value.toLowerCase()===correctPassword){
-document.getElementById("volumeModal").style.display="flex";
-}
-}
-
-function confirmVolume(){
-document.getElementById("volumeModal").style.display="none";
-startPlaylist();
-showIntro();
-}
-
-function startPlaylist(){
-if(musicStarted)return;
-musicStarted=true;
-const music=document.getElementById("bgMusic");
-music.src=playlist[currentSong];
-music.volume=0.3;
-music.play();
-music.addEventListener("ended",()=>{
-currentSong=(currentSong+1)%playlist.length;
-music.src=playlist[currentSong];
-music.play();
-});
-}
-
-function showIntro(){
-document.getElementById("passwordSection").classList.add("hidden");
-document.getElementById("introSection").classList.remove("hidden");
-typeWriter();
-}
-
-function typeWriter(){
-const text="Before delivery can proceed... one important question must be answered.";
-const el=document.getElementById("typeText");
-el.innerHTML="";
-let i=0;
-(function type(){
-if(i<text.length){
-el.innerHTML+=text.charAt(i++);
-setTimeout(type,35);
-}
-})();
-}
-
-function startValentine(){
-document.getElementById("introSection").classList.add("hidden");
-document.getElementById("valentineSection").classList.remove("hidden");
-}
-
-document.getElementById("noBtn").addEventListener("mouseover",function(){
-this.style.position="absolute";
-this.style.left=Math.random()*70+"%";
-this.style.top=Math.random()*70+"%";
-});
-
-function sayYes(){
-document.getElementById("valentineSection").classList.add("hidden");
-document.getElementById("quizSection").classList.remove("hidden");
-loadQuestion();
-}
-
-function loadQuestion(){
-document.getElementById("questionText").innerText=questions[currentQuestion].q;
-}
-
-function checkAnswer(){
-const input=document.getElementById("answerInput");
-if(input.value.toLowerCase().replace(/[^a-z0-9]/g,"")===
-questions[currentQuestion].a.replace(/[^a-z0-9]/g,"")){
-input.value="";
-if(currentQuestion===questions.length-1){
-launchConfetti();
-playScanVideo();
-}else{
-currentQuestion++;
-loadQuestion();
-}
-}else{
-alert("Wrong answer cutie 😌");
-}
-}
-
-function launchConfetti(){
-for(let i=0;i<40;i++){
-const d=document.createElement("div");
-d.style.position="fixed";
-d.style.width="6px";
-d.style.height="6px";
-d.style.background="#ff4e8d";
-d.style.top="-10px";
-d.style.left=Math.random()*100+"%";
-document.body.appendChild(d);
-let fall=setInterval(()=>{d.style.top=(parseFloat(d.style.top)+5)+"px";},30);
-setTimeout(()=>{clearInterval(fall);d.remove();},1000);
-}
-}
-
-function playScanVideo(){
-const wrapper=document.getElementById("videoWrapper");
-const v=document.getElementById("scanVideo");
-wrapper.style.display="block";
-v.currentTime=0;
-v.play();
-v.onended=()=>{
-wrapper.style.display="none";
-showTracker();
-};
-}
-
-function showTracker(){
-document.getElementById("quizSection").classList.add("hidden");
-document.getElementById("trackerSection").classList.remove("hidden");
 document.getElementById("estimatedDate").innerText =
 "Estimated Delivery: " + new Date(deliveryTime).toLocaleString();
-updateProgress();
+
+function breakSeal(){
+document.getElementById("envelope").classList.add("open");
+document.getElementById("seal").style.display="none"; // removes wax seal
 }
 
 function updateProgress(){
@@ -498,38 +380,14 @@ return;
 fill.style.width="50%";
 car.style.left="45%";
 
-const days=Math.floor(distance/(1000*60*60*24));
-const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
 const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
 const seconds=Math.floor((distance%(1000*60))/1000);
 
 document.getElementById("countdown").innerHTML=
-days+"d "+hours+"h "+minutes+"m "+seconds+"s remaining";
+minutes+"m "+seconds+"s remaining";
 }
 
 setInterval(updateProgress,1000);
-
-function openLetter(){
-document.getElementById("letterModal").style.display="flex";
-}
-
-function closeLetter(){
-document.getElementById("letterModal").style.display="none";
-document.getElementById("envelope").classList.remove("open");
-}
-
-function breakSeal(){
-document.getElementById("envelope").classList.add("open");
-}
-
-setInterval(()=>{
-const h=document.createElement("div");
-h.innerHTML="💖";
-h.className="floating-heart";
-h.style.left=Math.random()*100+"%";
-document.body.appendChild(h);
-setTimeout(()=>h.remove(),6000);
-},1500);
 </script>
 
 </body>
