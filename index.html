@@ -60,14 +60,19 @@ input {
     font-weight: bold;
 }
 
+/* MODAL FIX */
 .modal {
     position: fixed;
     background: rgba(0,0,0,0.6);
     width: 100%;
     height: 100%;
-    display: flex;
+    display: none; /* hidden by default */
     justify-content: center;
     align-items: center;
+}
+
+.modal.show {
+    display: flex;
 }
 
 .modal-box {
@@ -83,19 +88,6 @@ input {
     white-space: nowrap;
     overflow: hidden;
 }
-
-.floating-heart {
-    position: fixed;
-    bottom: -20px;
-    font-size: 20px;
-    animation: floatUp 6s linear infinite;
-    color: rgba(255,255,255,0.6);
-}
-
-@keyframes floatUp {
-    from { transform: translateY(0); }
-    to { transform: translateY(-100vh); }
-}
 </style>
 </head>
 <body>
@@ -104,7 +96,7 @@ input {
 
 <div class="container">
 
-<div class="logo" onclick="adminTap()">SVP Secure Delivery</div>
+<div class="logo">SVP Secure Delivery</div>
 <div class="now-playing">🎵 Now Playing: Dumptrick Playlist</div>
 
 <div id="passwordSection">
@@ -120,31 +112,9 @@ input {
 <button onclick="startValentine()">Continue 💌</button>
 </div>
 
-<div id="valentineSection" class="hidden">
-<h2>Will you be my Valentine?</h2>
-<button onclick="sayYes()">YES 💘</button>
-<button id="noBtn">NO 😏</button>
 </div>
 
-<div id="quizSection" class="hidden">
-<h2>Memory Verification</h2>
-<p id="questionText"></p>
-<input type="text" id="answerInput">
-<button onclick="checkAnswer()">Submit</button>
-</div>
-
-<div id="trackerSection" class="hidden">
-<h2>📦 Shipment Activated</h2>
-<p><strong>Tracking #:</strong> <span id="trackingNumber"></span></p>
-<p>Status: Scanned at Los Angeles Facility</p>
-<p id="countdown"></p>
-<input type="datetime-local" id="dateTimePicker">
-<button onclick="startCountdown()">Set Delivery Time</button>
-</div>
-
-</div>
-
-<div id="volumeModal" class="modal hidden">
+<div id="volumeModal" class="modal">
     <div class="modal-box">
         <h3>🎵 Make Sure Your Volume Is Up</h3>
         <p>This delivery includes audio.</p>
@@ -163,18 +133,16 @@ const playlist = [
 
 let currentSong = 0;
 let musicStarted = false;
-let adminClicks = 0;
-let countdownInterval;
 
 function checkPassword(){
     const input = document.getElementById("passwordInput").value.toLowerCase();
     if(input === correctPassword){
-        document.getElementById("volumeModal").classList.remove("hidden");
+        document.getElementById("volumeModal").classList.add("show");
     } else alert("Access Denied 😏");
 }
 
 function confirmVolume(){
-    document.getElementById("volumeModal").classList.add("hidden");
+    document.getElementById("volumeModal").classList.remove("show");
     startPlaylist();
     showIntro();
 }
@@ -244,69 +212,6 @@ function typeWriter(){
     }
     typing();
 }
-
-function startValentine(){
-    document.getElementById("introSection").classList.add("hidden");
-    document.getElementById("valentineSection").classList.remove("hidden");
-}
-
-const noBtn = document.getElementById("noBtn");
-noBtn.addEventListener("mouseover", function(){
-    noBtn.style.position = "absolute";
-    noBtn.style.left = Math.random()*80 + "%";
-    noBtn.style.top = Math.random()*80 + "%";
-});
-
-function sayYes(){
-    document.getElementById("valentineSection").classList.add("hidden");
-    document.getElementById("quizSection").classList.remove("hidden");
-}
-
-function checkAnswer(){
-    showTracker();
-}
-
-function showTracker(){
-    document.getElementById("quizSection").classList.add("hidden");
-    document.getElementById("trackerSection").classList.remove("hidden");
-    document.getElementById("trackingNumber").innerText =
-    "SVP" + Math.floor(Math.random()*1000000000);
-}
-
-function startCountdown(){
-    const target = new Date(document.getElementById("dateTimePicker").value).getTime();
-    clearInterval(countdownInterval);
-    countdownInterval = setInterval(()=>{
-        const now = new Date().getTime();
-        const distance = target-now;
-        if(distance <= 0){
-            document.getElementById("countdown").innerHTML="🎉 DELIVERY COMPLETE!";
-            clearInterval(countdownInterval);
-            return;
-        }
-        const h=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
-        const m=Math.floor((distance%(1000*60*60))/(1000*60));
-        const s=Math.floor((distance%(1000*60))/1000);
-        document.getElementById("countdown").innerHTML=h+"h "+m+"m "+s+"s";
-    },1000);
-}
-
-function adminTap(){
-    adminClicks++;
-    if(adminClicks >= 5){
-        alert("Admin Mode Activated");
-        document.getElementById("trackerSection").classList.remove("hidden");
-    }
-}
-
-setInterval(()=>{
-    const heart=document.createElement("div");
-    heart.innerHTML="💖";
-    heart.className="floating-heart";
-    heart.style.left=Math.random()*100+"%";
-    document.body.appendChild(heart);
-    setTimeout(()=>heart.remove(),6000);
-},1500);
 </script>
 </body>
 </html>
