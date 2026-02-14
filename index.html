@@ -5,6 +5,10 @@
 <title>Secure Valentine Delivery Portal</title>
 
 <style>
+    html{
+height:100%;
+}
+
 body{
 margin:0;
 font-family:'Segoe UI',sans-serif;
@@ -12,8 +16,9 @@ background:linear-gradient(135deg,#ff4e8d,#ff9a9e);
 display:flex;
 justify-content:center;
 align-items:center;
-height:100vh;
-overflow:hidden;
+min-height:100vh;
+padding:20px 0;
+overflow:auto;
 }
 .container{
 background:white;
@@ -42,6 +47,7 @@ padding:10px;
 border-radius:10px;
 border:1px solid #ddd;
 width:85%;
+font-size:16px;    
 }
 
 /* Volume Modal */
@@ -256,11 +262,14 @@ text-align:center;
 <div class="progress-bar">
 <div class="progress-fill" id="progressFill"></div>
 <div class="car" id="car">🚗</div>
-<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;">
-<span id="statusSelected">Gift Awarded</span>
+</div>
+
+<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:8px;">
+<span id="statusSelected">Gift Selected</span>
 <span id="statusRoute">On Route</span>
 <span id="statusDelivered">Delivered</span>
-</div>  
+</div>
+
 </div>
     
 <p class="countdownText" id="countdown"></p>
