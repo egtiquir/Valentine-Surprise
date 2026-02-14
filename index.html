@@ -255,6 +255,12 @@ text-align:center;
 <div class="progress-bar">
 <div class="progress-fill" id="progressFill"></div>
 <div class="car" id="car">🚗</div>
+<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;">
+<span id="statusSelected">Gift Selected</span>
+<span id="statusRoute">On Route</span>
+<span id="statusDelivered">Delivered</span>
+</div>
+
 </div>
 <p class="countdownText" id="countdown"></p>
 <button onclick="openLetter()">Open Sealed Letter 💌</button>
@@ -449,15 +455,31 @@ updateProgress();
 }
 
 function updateProgress(){
+function updateProgress(){
 const now=new Date().getTime();
 const distance=deliveryTime-now;
+
 const fill=document.getElementById("progressFill");
 const car=document.getElementById("car");
+
+const selected=document.getElementById("statusSelected");
+const route=document.getElementById("statusRoute");
+const delivered=document.getElementById("statusDelivered");
+
+// Reset colors
+selected.style.color="#999";
+route.style.color="#999";
+delivered.style.color="#999";
 
 if(distance<=0){
 fill.style.width="100%";
 car.style.left="92%";
 document.getElementById("countdown").innerHTML="🎉 Delivered!";
+
+selected.style.color="#ff4e8d";
+route.style.color="#ff4e8d";
+delivered.style.color="#ff4e8d";
+
 if(!finalShown){
 finalShown=true;
 document.getElementById("finalOverlay").style.display="flex";
@@ -465,8 +487,12 @@ document.getElementById("finalOverlay").style.display="flex";
 return;
 }
 
+// Before delivery time
 fill.style.width="50%";
 car.style.left="45%";
+
+selected.style.color="#ff4e8d";
+route.style.color="#ff4e8d";
 
 const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
 const seconds=Math.floor((distance%(1000*60))/1000);
@@ -474,8 +500,6 @@ const seconds=Math.floor((distance%(1000*60))/1000);
 document.getElementById("countdown").innerHTML=
 minutes+"m "+seconds+"s remaining";
 }
-
-setInterval(updateProgress,1000);
 
 function openLetter(){
 document.getElementById("letterModal").style.display="flex";
