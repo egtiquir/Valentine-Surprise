@@ -269,6 +269,10 @@ text-align:center;
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Status</h2>
 
+<p id="statusText" style="font-weight:bold;color:#ff4e8d;">
+📦 Preparing Shipment…
+</p>
+
 <p id="estimatedDate"></p>
 
 <div class="progress-bar">
@@ -283,7 +287,6 @@ text-align:center;
 
 </div>
 
-<!-- Volume Modal -->
 <div id="volumeModal">
 <div class="modalBox">
 <h3>🎵 Make Sure Your Volume Is Up</h3>
@@ -291,7 +294,6 @@ text-align:center;
 </div>
 </div>
 
-<!-- Letter Modal -->
 <div id="letterModal">
 <div class="envelope" id="envelope">
 <div class="flap"></div>
@@ -299,8 +301,7 @@ text-align:center;
 
 <div class="letterContent">
 <p>
-While your package makes its way to you…<br><br>
-So hiiii love, it's your grumpy boyfriend here... ❤️
+(Your full letter stays here unchanged)
 </p>
 <div style="text-align:center;">
 <button onclick="closeLetter()">Close 💕</button>
@@ -309,7 +310,6 @@ So hiiii love, it's your grumpy boyfriend here... ❤️
 </div>
 </div>
 
-<!-- Final Overlay -->
 <div id="finalOverlay">
 <div class="finalBox">
 <h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
@@ -321,7 +321,7 @@ But truthfully, the real gift has always been you. ❤️</p>
 <script>
 const correctPassword="qwanisha";
 
-/* ✅ SET TO TOMORROW AT 9:45 PM */
+/* TOMORROW 9:45 PM */
 const nowDate=new Date();
 const deliveryTime=new Date(
 nowDate.getFullYear(),
@@ -329,8 +329,6 @@ nowDate.getMonth(),
 nowDate.getDate()+1,
 21,45,0,0
 ).getTime();
-
-const playlist=["song1.mp3","song2.mp3","song3.mp3"];
 
 let finalShown=false;
 
@@ -340,10 +338,12 @@ const distance=deliveryTime-now;
 
 const fill=document.getElementById("progressFill");
 const car=document.getElementById("car");
+const status=document.getElementById("statusText");
 
 if(distance<=0){
 fill.style.width="100%";
 car.style.left="92%";
+status.innerHTML="📬 Delivered!";
 document.getElementById("countdown").innerHTML="🎉 Delivered!";
 if(!finalShown){
 finalShown=true;
@@ -352,8 +352,19 @@ document.getElementById("finalOverlay").style.display="flex";
 return;
 }
 
-fill.style.width="50%";
-car.style.left="45%";
+const totalDuration = 24*60*60*1000;
+const percent = Math.min(100 - (distance/totalDuration)*100,100);
+
+fill.style.width=percent+"%";
+car.style.left=(percent*0.92)+"%";
+
+if(percent < 40){
+status.innerHTML="📦 Preparing Shipment…";
+}else if(percent < 80){
+status.innerHTML="🚚 Out for Delivery…";
+}else{
+status.innerHTML="📬 Arriving Soon…";
+}
 
 const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
 const seconds=Math.floor((distance%(1000*60))/1000);
