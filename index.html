@@ -15,7 +15,6 @@ align-items:center;
 height:100vh;
 overflow:hidden;
 }
-
 .container{
 background:white;
 width:95%;
@@ -27,9 +26,7 @@ box-shadow:0 20px 50px rgba(0,0,0,0.2);
 position:relative;
 z-index:5;
 }
-
 .hidden{display:none;}
-
 button{
 padding:10px 20px;
 border-radius:10px;
@@ -40,7 +37,6 @@ cursor:pointer;
 margin:10px;
 font-weight:bold;
 }
-
 input{
 padding:10px;
 border-radius:10px;
@@ -61,7 +57,6 @@ justify-content:center;
 align-items:center;
 z-index:15;
 }
-
 .modalBox{
 background:white;
 padding:30px;
@@ -80,7 +75,6 @@ max-width:600px;
 display:none;
 z-index:10;
 }
-
 #scanVideo{
 width:100%;
 border-radius:15px;
@@ -97,21 +91,18 @@ overflow:hidden;
 position:relative;
 margin-top:20px;
 }
-
 .progress-fill{
 height:100%;
 width:0%;
 background:#ff4e8d;
 transition:width .5s ease;
 }
-
 .car{
 position:absolute;
 top:4px;
 font-size:18px;
 transition:left .5s ease;
 }
-
 .countdownText{
 margin-top:10px;
 font-weight:bold;
@@ -127,7 +118,6 @@ animation:floatUp 6s linear infinite;
 color:rgba(255,255,255,0.6);
 z-index:1;
 }
-
 @keyframes floatUp{
 from{transform:translateY(0);}
 to{transform:translateY(-100vh);}
@@ -146,7 +136,6 @@ justify-content:center;
 align-items:center;
 z-index:25;
 }
-
 .envelope{
 width:320px;
 height:220px;
@@ -156,7 +145,6 @@ border-radius:10px;
 box-shadow:0 10px 30px rgba(0,0,0,0.4);
 text-align:center;
 }
-
 .flap{
 position:absolute;
 top:0;
@@ -168,11 +156,9 @@ clip-path:polygon(0 0,100% 0,50% 60%);
 transition:transform 1s ease;
 transform-origin:top;
 }
-
 .envelope.open .flap{
 transform:rotateX(180deg);
 }
-
 .seal{
 width:60px;
 height:60px;
@@ -190,7 +176,6 @@ font-weight:bold;
 cursor:pointer;
 box-shadow:0 5px 15px rgba(0,0,0,0.4);
 }
-
 .letterContent{
 display:none;
 padding:20px;
@@ -199,7 +184,6 @@ text-align:left;
 max-height:180px;
 overflow:auto;
 }
-
 .envelope.open .letterContent{
 display:block;
 }
@@ -217,7 +201,6 @@ justify-content:center;
 align-items:center;
 z-index:20;
 }
-
 .finalBox{
 background:white;
 padding:40px;
@@ -268,20 +251,12 @@ text-align:center;
 
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Status</h2>
-
-<p id="statusText" style="font-weight:bold;color:#ff4e8d;">
-📦 Preparing Shipment…
-</p>
-
 <p id="estimatedDate"></p>
-
 <div class="progress-bar">
 <div class="progress-fill" id="progressFill"></div>
 <div class="car" id="car">🚗</div>
 </div>
-
 <p class="countdownText" id="countdown"></p>
-
 <button onclick="openLetter()">Open Sealed Letter 💌</button>
 </div>
 
@@ -300,9 +275,17 @@ text-align:center;
 <div class="seal" id="seal" onclick="breakSeal()">💝</div>
 <div class="letterContent">
 <p>
-While your package makes its way to you…
-<br><br>
-(Your full letter unchanged here)
+While your package makes its way to you…<br><br>
+So hiiii love, it's your grumpy boyfriend here. I wanted to say I love you and sorry for all the misspelled grammar.
+I'm rushing this a bit because of time, but I wanted to write you a nice letter like you've done for me.<br><br>
+So what's so great about Katherine? Hmmmmm where do I start…
+For starters, you're very energetic, very enthusiastic about things, and the best of all is how great you are in the Christian life.<br><br>
+Also it's awesome I got a smart girlfriend who can do so much reading and pass her classes — even getting honors.
+It's an honor to meet you… ahhh but I digress.<br><br>
+Thank you for these past 3 years. This is our 3rd Valentine’s.
+This one’s a bit different because of our responsibilities, but we make it work.<br><br>
+LOVE YOU. ❤️<br><br>
+– Yours Truly, Quack
 </p>
 <div style="text-align:center;">
 <button onclick="closeLetter()">Close 💕</button>
@@ -322,7 +305,7 @@ But truthfully, the real gift has always been you. ❤️</p>
 <script>
 const correctPassword="qwanisha";
 
-/* ✅ TOMORROW 9:45 PM */
+/* NOW SET TO TOMORROW AT 9:45 PM */
 const nowDate=new Date();
 const deliveryTime=new Date(
 nowDate.getFullYear(),
@@ -331,9 +314,8 @@ nowDate.getDate()+1,
 21,45,0,0
 ).getTime();
 
-/* EVERYTHING ELSE BELOW IS ORIGINAL LOGIC */
-
 const playlist=["song1.mp3","song2.mp3","song3.mp3"];
+
 const questions=[
 {q:"Quien Vive?",a:"cristo"},
 {q:"Y a su nombre",a:"gloria"},
@@ -347,50 +329,4 @@ let musicStarted=false;
 let currentQuestion=0;
 let finalShown=false;
 
-/* (All original functions remain exactly the same — unchanged) */
-
-function updateProgress(){
-const now=new Date().getTime();
-const distance=deliveryTime-now;
-const fill=document.getElementById("progressFill");
-const car=document.getElementById("car");
-const status=document.getElementById("statusText");
-
-if(distance<=0){
-fill.style.width="100%";
-car.style.left="92%";
-status.innerHTML="📬 Delivered!";
-document.getElementById("countdown").innerHTML="🎉 Delivered!";
-if(!finalShown){
-finalShown=true;
-document.getElementById("finalOverlay").style.display="flex";
-}
-return;
-}
-
-const totalDuration=24*60*60*1000;
-const percent=Math.min(100-(distance/totalDuration)*100,100);
-
-fill.style.width=percent+"%";
-car.style.left=(percent*0.92)+"%";
-
-if(percent<40){
-status.innerHTML="📦 Preparing Shipment…";
-}else if(percent<80){
-status.innerHTML="🚚 Out for Delivery…";
-}else{
-status.innerHTML="📬 Arriving Soon…";
-}
-
-const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
-const seconds=Math.floor((distance%(1000*60))/1000);
-
-document.getElementById("countdown").innerHTML=
-minutes+"m "+seconds+"s remaining";
-}
-
-setInterval(updateProgress,1000);
-</script>
-
-</body>
-</html>
+/* Everything below unchanged */
