@@ -75,6 +75,33 @@ input {
     overflow: hidden;
 }
 
+/* NOW PLAYING */
+.now-playing {
+    margin-top: 10px;
+    font-size: 14px;
+    color: #ff4e8d;
+    font-weight: bold;
+}
+
+/* MODAL */
+.modal {
+    position: fixed;
+    background: rgba(0,0,0,0.6);
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-box {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    text-align: center;
+    max-width: 400px;
+}
+
 .floating-heart {
     position: fixed;
     bottom: -20px;
@@ -91,15 +118,14 @@ input {
 </head>
 <body>
 
-<audio id="bgMusic" loop>
-    <source src="song.mp3" type="audio/mpeg">
-</audio>
+<audio id="bgMusic"></audio>
 
 <div class="container">
 
 <div class="logo" onclick="adminTap()">SVP Secure Delivery</div>
 
-<!-- PASSWORD -->
+<div class="now-playing" id="nowPlaying">🎵 Now Playing: Dumptrick Playlist</div>
+
 <div id="passwordSection">
 <h2>🔐 Secure Access</h2>
 <input type="password" id="passwordInput" placeholder="Enter Password">
@@ -107,21 +133,18 @@ input {
 <button onclick="checkPassword()">Access</button>
 </div>
 
-<!-- INTRO -->
 <div id="introSection" class="hidden">
 <h2 class="typewriter" id="typeText"></h2>
 <br>
 <button onclick="startValentine()">Continue 💌</button>
 </div>
 
-<!-- VALENTINE -->
 <div id="valentineSection" class="hidden">
 <h2>Will you be my Valentine?</h2>
 <button onclick="sayYes()">YES 💘</button>
 <button id="noBtn">NO 😏</button>
 </div>
 
-<!-- QUIZ -->
 <div id="quizSection" class="hidden">
 <h2>Memory Verification</h2>
 <p id="questionText"></p>
@@ -132,7 +155,6 @@ input {
 </div>
 </div>
 
-<!-- TRACKER -->
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Activated</h2>
 <p><strong>Tracking #:</strong> <span id="trackingNumber"></span></p>
@@ -144,8 +166,28 @@ input {
 
 </div>
 
+<div id="volumeModal" class="modal hidden">
+    <div class="modal-box">
+        <h3>🎵 Make Sure Your Volume Is Up</h3>
+        <p>This delivery includes audio.</p>
+        <button onclick="confirmVolume()">Okay 💕</button>
+    </div>
+</div>
+
 <script>
 const correctPassword = "qwanisha";
+
+const playlist = [
+"song1.mp3",
+"song2.mp3",
+"song3.mp3"
+];
+
+let currentSong = 0;
+let musicStarted = false;
+let currentQuestion = parseInt(localStorage.getItem("currentQuestion")) || 0;
+let adminClicks = 0;
+let countdownInterval;
 
 const questions = [
 { q: "Where did we first meet?", a: "library" },
@@ -155,18 +197,67 @@ const questions = [
 { q: "Inside joke word?", a: "pineapple" }
 ];
 
-let currentQuestion = parseInt(localStorage.getItem("currentQuestion")) || 0;
-let adminClicks = 0;
-let countdownInterval;
-
-/* PASSWORD (case insensitive) */
 function checkPassword(){
     const input = document.getElementById("passwordInput").value.toLowerCase();
     if(input === correctPassword){
         localStorage.setItem("unlocked","true");
-        showIntro();
-        document.getElementById("bgMusic").play();
+        document.getElementById("volumeModal").classList.remove("hidden");
     } else alert("Access Denied 😏");
+}
+
+function confirmVolume(){
+    document.getElementById("volumeModal").classList.add("hidden");
+    startPlaylist();
+    showIntro();
+}
+
+/* CROSSFADE PLAYLIST */
+function startPlaylist(){
+    if(musicStarted) return;
+    musicStarted = true;
+    playSong(currentSong);
+}
+
+function playSong(index){
+    const music = document.getElementById("bgMusic");
+    music.src = playlist[index];
+    music.volume = 0;
+    music.play();
+
+    document.getElementById("nowPlaying").innerText =
+    "🎵 Now Playing: Dumptrick Playlist";
+
+    fadeIn(music);
+
+    music.onended = () => {
+        fadeOut(music, () => {
+            currentSong = (currentSong + 1) % playlist.length;
+            playSong(currentSong);
+        });
+    };
+}
+
+function fadeIn(audio){
+    let fade = setInterval(()=>{
+        if(audio.volume < 0.95){
+            audio.volume += 0.05;
+        } else {
+            audio.volume = 1;
+            clearInterval(fade);
+        }
+    },150);
+}
+
+function fadeOut(audio, callback){
+    let fade = setInterval(()=>{
+        if(audio.volume > 0.05){
+            audio.volume -= 0.05;
+        } else {
+            audio.volume = 0;
+            clearInterval(fade);
+            callback();
+        }
+    },150);
 }
 
 function showIntro(){
@@ -175,7 +266,6 @@ function showIntro(){
     typeWriter();
 }
 
-/* TYPEWRITER */
 function typeWriter(){
     const text = "Before delivery can proceed... one important question must be answered.";
     const element = document.getElementById("typeText");
@@ -196,7 +286,6 @@ function startValentine(){
     document.getElementById("valentineSection").classList.remove("hidden");
 }
 
-/* MOVING NO BUTTON */
 const noBtn = document.getElementById("noBtn");
 noBtn.addEventListener("mouseover", function(){
     noBtn.style.position = "absolute";
@@ -211,7 +300,6 @@ function sayYes(){
     loadQuestion();
 }
 
-/* QUIZ */
 function loadQuestion(){
     document.getElementById("questionText").innerText = questions[currentQuestion].q;
     document.getElementById("progressFill").style.width =
@@ -233,7 +321,6 @@ function checkAnswer(){
     } else alert("Wrong answer cutie 😌");
 }
 
-/* TRACKER */
 function showTracker(){
     document.getElementById("quizSection").classList.add("hidden");
     document.getElementById("trackerSection").classList.remove("hidden");
@@ -282,7 +369,6 @@ function startCountdown(fromStorage=false){
     },1000);
 }
 
-/* ADMIN SECRET */
 function adminTap(){
     adminClicks++;
     if(adminClicks >= 5){
@@ -291,7 +377,6 @@ function adminTap(){
     }
 }
 
-/* FLOATING HEARTS */
 setInterval(()=>{
     const heart=document.createElement("div");
     heart.innerHTML="💖";
@@ -301,14 +386,11 @@ setInterval(()=>{
     setTimeout(()=>heart.remove(),6000);
 },1500);
 
-/* RESTORE STATE */
 window.onload=function(){
     if(localStorage.getItem("unlocked")){
-        showIntro();
+        document.getElementById("volumeModal").classList.remove("hidden");
     }
     if(localStorage.getItem("saidYes")){
-        document.getElementById("introSection").classList.add("hidden");
-        document.getElementById("valentineSection").classList.add("hidden");
         document.getElementById("quizSection").classList.remove("hidden");
         loadQuestion();
     }
@@ -319,3 +401,4 @@ window.onload=function(){
 </script>
 </body>
 </html>
+
