@@ -171,4 +171,187 @@ input{
 
 <script>
 const correctPassword="qwanisha";
-const deliveryTime=new Date("2026-02-14T19:00:00").ge
+const deliveryTime=new Date("2026-02-14T19:00:00").getTime(); // 🔥 EDIT THIS
+
+const playlist=["song1.mp3","song2.mp3","song3.mp3"];
+const questions=[
+{q:"Quien Vive?",a:"cristo"},
+{q:"Y a su nombre",a:"gloria"},
+{q:"First date place?",a:"in-n-out"},
+{q:"TV show we watched?",a:"king julien"},
+{q:"Where were we headed when playlist was made?",a:"san diego"}
+];
+
+let currentSong=0;
+let musicStarted=false;
+let currentQuestion=0;
+let adminClicks=0;
+
+function normalize(t){
+return t.toLowerCase().replace(/[\s\-']/g,"").trim();
+}
+
+/* PASSWORD */
+function checkPassword(){
+const input=document.getElementById("passwordInput").value.toLowerCase();
+if(input===correctPassword){
+document.getElementById("volumeModal").classList.add("show");
+}
+}
+
+function confirmVolume(){
+document.getElementById("volumeModal").classList.remove("show");
+startPlaylist();
+showIntro();
+}
+
+/* PLAYLIST */
+function startPlaylist(){
+if(musicStarted)return;
+musicStarted=true;
+playSong(currentSong);
+}
+function playSong(i){
+const music=document.getElementById("bgMusic");
+music.src=playlist[i];
+music.volume=0;
+music.play();
+fadeIn(music);
+music.onended=()=>{
+fadeOut(music,()=>{
+currentSong=(currentSong+1)%playlist.length;
+playSong(currentSong);
+});
+};
+}
+function fadeIn(a){
+let f=setInterval(()=>{if(a.volume<.95)a.volume+=.05;else{a.volume=1;clearInterval(f);}},150);
+}
+function fadeOut(a,cb){
+let f=setInterval(()=>{if(a.volume>.05)a.volume-=.05;else{a.volume=0;clearInterval(f);cb();}},150);
+}
+
+/* INTRO */
+function showIntro(){
+document.getElementById("passwordSection").classList.add("hidden");
+document.getElementById("introSection").classList.remove("hidden");
+typeWriter();
+}
+function typeWriter(){
+const text="Before delivery can proceed... one important question must be answered.";
+const el=document.getElementById("typeText");
+el.innerHTML="";
+let i=0;
+function type(){
+if(i<text.length){el.innerHTML+=text.charAt(i);i++;setTimeout(type,35);}
+}
+type();
+}
+
+function startValentine(){
+document.getElementById("introSection").classList.add("hidden");
+document.getElementById("valentineSection").classList.remove("hidden");
+}
+
+document.getElementById("noBtn").addEventListener("mouseover",function(){
+this.style.position="absolute";
+this.style.left=Math.random()*70+"%";
+this.style.top=Math.random()*70+"%";
+});
+
+function sayYes(){
+document.getElementById("valentineSection").classList.add("hidden");
+document.getElementById("quizSection").classList.remove("hidden");
+loadQuestion();
+}
+
+function loadQuestion(){
+document.getElementById("questionText").innerText=questions[currentQuestion].q;
+}
+
+function checkAnswer(){
+const u=normalize(document.getElementById("answerInput").value);
+const c=normalize(questions[currentQuestion].a);
+if(u===c){
+currentQuestion++;
+document.getElementById("answerInput").value="";
+if(currentQuestion<questions.length){
+loadQuestion();
+}else{
+launchConfetti();
+setTimeout(playScanVideo,1200);
+}
+}
+}
+
+/* CONFETTI */
+function launchConfetti(){
+for(let i=0;i<60;i++){
+const d=document.createElement("div");
+d.style.position="fixed";
+d.style.width="8px";
+d.style.height="8px";
+d.style.background="#ff4e8d";
+d.style.top="-10px";
+d.style.left=Math.random()*100+"%";
+document.body.appendChild(d);
+let fall=setInterval(()=>{d.style.top=(parseFloat(d.style.top)+5)+"px";},30);
+setTimeout(()=>{clearInterval(fall);d.remove();},1500);
+}
+}
+
+/* VIDEO */
+function playScanVideo(){
+const v=document.getElementById("scanVideo");
+v.style.display="block";
+v.play();
+v.onended=()=>{
+v.style.display="none";
+showTracker();
+};
+}
+
+/* TRACKER */
+function showTracker(){
+document.getElementById("quizSection").classList.add("hidden");
+document.getElementById("trackerSection").classList.remove("hidden");
+updateProgress();
+}
+function updateProgress(){
+const now=new Date().getTime();
+const fill=document.getElementById("progressFill");
+const car=document.getElementById("car");
+if(now>=deliveryTime){
+fill.style.width="100%";
+car.style.left="95%";
+document.getElementById("countdown").innerHTML="🎉 Delivered!";
+return;
+}
+fill.style.width="50%";
+car.style.left="50%";
+document.getElementById("countdown").innerHTML="On Route 🚗";
+}
+setInterval(updateProgress,1000);
+
+/* ADMIN */
+document.querySelector(".container").addEventListener("click",()=>{
+adminClicks++;
+if(adminClicks>=5){
+alert("Admin Mode Activated");
+document.getElementById("trackerSection").classList.remove("hidden");
+}
+});
+
+/* HEARTS */
+setInterval(()=>{
+const h=document.createElement("div");
+h.innerHTML="💖";
+h.className="floating-heart";
+h.style.left=Math.random()*100+"%";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),6000);
+},1500);
+</script>
+
+</body>
+</html>
