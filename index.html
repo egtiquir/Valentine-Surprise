@@ -24,7 +24,6 @@ body {
     padding: 30px;
     text-align: center;
     box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    position: relative;
 }
 
 .logo {
@@ -54,28 +53,6 @@ input {
 
 .hidden { display: none; }
 
-.progress-bar {
-    width: 100%;
-    background: #eee;
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-.progress-fill {
-    height: 15px;
-    width: 0%;
-    background: #ff4e8d;
-    transition: width 0.5s ease;
-}
-
-.typewriter {
-    border-right: 2px solid #ff4e8d;
-    white-space: nowrap;
-    overflow: hidden;
-}
-
-/* NOW PLAYING */
 .now-playing {
     margin-top: 10px;
     font-size: 14px;
@@ -83,7 +60,6 @@ input {
     font-weight: bold;
 }
 
-/* MODAL */
 .modal {
     position: fixed;
     background: rgba(0,0,0,0.6);
@@ -100,6 +76,12 @@ input {
     border-radius: 20px;
     text-align: center;
     max-width: 400px;
+}
+
+.typewriter {
+    border-right: 2px solid #ff4e8d;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .floating-heart {
@@ -123,8 +105,7 @@ input {
 <div class="container">
 
 <div class="logo" onclick="adminTap()">SVP Secure Delivery</div>
-
-<div class="now-playing" id="nowPlaying">🎵 Now Playing: Dumptrick Playlist</div>
+<div class="now-playing">🎵 Now Playing: Dumptrick Playlist</div>
 
 <div id="passwordSection">
 <h2>🔐 Secure Access</h2>
@@ -150,9 +131,6 @@ input {
 <p id="questionText"></p>
 <input type="text" id="answerInput">
 <button onclick="checkAnswer()">Submit</button>
-<div class="progress-bar">
-<div class="progress-fill" id="progressFill"></div>
-</div>
 </div>
 
 <div id="trackerSection" class="hidden">
@@ -185,22 +163,12 @@ const playlist = [
 
 let currentSong = 0;
 let musicStarted = false;
-let currentQuestion = parseInt(localStorage.getItem("currentQuestion")) || 0;
 let adminClicks = 0;
 let countdownInterval;
-
-const questions = [
-{ q: "Where did we first meet?", a: "library" },
-{ q: "First date location?", a: "beach" },
-{ q: "Our song?", a: "perfect" },
-{ q: "Favorite food together?", a: "tacos" },
-{ q: "Inside joke word?", a: "pineapple" }
-];
 
 function checkPassword(){
     const input = document.getElementById("passwordInput").value.toLowerCase();
     if(input === correctPassword){
-        localStorage.setItem("unlocked","true");
         document.getElementById("volumeModal").classList.remove("hidden");
     } else alert("Access Denied 😏");
 }
@@ -211,7 +179,6 @@ function confirmVolume(){
     showIntro();
 }
 
-/* CROSSFADE PLAYLIST */
 function startPlaylist(){
     if(musicStarted) return;
     musicStarted = true;
@@ -223,9 +190,6 @@ function playSong(index){
     music.src = playlist[index];
     music.volume = 0;
     music.play();
-
-    document.getElementById("nowPlaying").innerText =
-    "🎵 Now Playing: Dumptrick Playlist";
 
     fadeIn(music);
 
@@ -294,78 +258,36 @@ noBtn.addEventListener("mouseover", function(){
 });
 
 function sayYes(){
-    localStorage.setItem("saidYes","true");
     document.getElementById("valentineSection").classList.add("hidden");
     document.getElementById("quizSection").classList.remove("hidden");
-    loadQuestion();
-}
-
-function loadQuestion(){
-    document.getElementById("questionText").innerText = questions[currentQuestion].q;
-    document.getElementById("progressFill").style.width =
-    (currentQuestion/questions.length)*100 + "%";
 }
 
 function checkAnswer(){
-    const answer = document.getElementById("answerInput").value.toLowerCase();
-    if(answer === questions[currentQuestion].a){
-        currentQuestion++;
-        localStorage.setItem("currentQuestion", currentQuestion);
-        document.getElementById("answerInput").value="";
-        if(currentQuestion < questions.length){
-            loadQuestion();
-        } else {
-            localStorage.setItem("completedQuiz","true");
-            showTracker();
-        }
-    } else alert("Wrong answer cutie 😌");
+    showTracker();
 }
 
 function showTracker(){
     document.getElementById("quizSection").classList.add("hidden");
     document.getElementById("trackerSection").classList.remove("hidden");
-
-    if(!localStorage.getItem("trackingNumber")){
-        const number = "SVP" + Math.floor(Math.random()*1000000000);
-        localStorage.setItem("trackingNumber", number);
-    }
-
     document.getElementById("trackingNumber").innerText =
-    localStorage.getItem("trackingNumber");
-
-    if(localStorage.getItem("deliveryTime")){
-        startCountdown(true);
-    }
+    "SVP" + Math.floor(Math.random()*1000000000);
 }
 
-function startCountdown(fromStorage=false){
-    let target;
-    if(fromStorage){
-        target = parseInt(localStorage.getItem("deliveryTime"));
-    } else {
-        target = new Date(document.getElementById("dateTimePicker").value).getTime();
-        localStorage.setItem("deliveryTime", target);
-    }
-
+function startCountdown(){
+    const target = new Date(document.getElementById("dateTimePicker").value).getTime();
     clearInterval(countdownInterval);
-
-    countdownInterval = setInterval(function(){
+    countdownInterval = setInterval(()=>{
         const now = new Date().getTime();
         const distance = target-now;
-
         if(distance <= 0){
             document.getElementById("countdown").innerHTML="🎉 DELIVERY COMPLETE!";
             clearInterval(countdownInterval);
             return;
         }
-
-        const days = Math.floor(distance/(1000*60*60*24));
-        const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
-        const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
-        const seconds=Math.floor((distance%(1000*60))/1000);
-
-        document.getElementById("countdown").innerHTML=
-        days+"d "+hours+"h "+minutes+"m "+seconds+"s";
+        const h=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+        const m=Math.floor((distance%(1000*60*60))/(1000*60));
+        const s=Math.floor((distance%(1000*60))/1000);
+        document.getElementById("countdown").innerHTML=h+"h "+m+"m "+s+"s";
     },1000);
 }
 
@@ -385,20 +307,6 @@ setInterval(()=>{
     document.body.appendChild(heart);
     setTimeout(()=>heart.remove(),6000);
 },1500);
-
-window.onload=function(){
-    if(localStorage.getItem("unlocked")){
-        document.getElementById("volumeModal").classList.remove("hidden");
-    }
-    if(localStorage.getItem("saidYes")){
-        document.getElementById("quizSection").classList.remove("hidden");
-        loadQuestion();
-    }
-    if(localStorage.getItem("completedQuiz")){
-        showTracker();
-    }
-}
 </script>
 </body>
 </html>
-
