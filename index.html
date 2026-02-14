@@ -200,7 +200,6 @@ display:none;
 justify-content:center;
 align-items:center;
 z-index:20;
-cursor:pointer;
 }
 .finalBox{
 background:white;
@@ -266,23 +265,45 @@ text-align:center;
 </div>
 
 <p class="countdownText" id="countdown"></p>
-
 <button onclick="openLetter()">Open Sealed Letter 💌</button>
 </div>
 
 </div>
 
-<div id="finalOverlay" onclick="closeFinal()">
+<div id="volumeModal">
+<div class="modalBox">
+<h3>🎵 Make Sure Your Volume Is Up</h3>
+<button onclick="confirmVolume()">Okay 💕</button>
+</div>
+</div>
+
+<div id="letterModal">
+<div class="envelope" id="envelope">
+<div class="flap"></div>
+<div class="seal" id="seal" onclick="breakSeal()">💝</div>
+<div class="letterContent">
+<p>
+While your package makes its way to you…<br><br>
+So hiiii love, it's your grumpy boyfriend here...
+</p>
+<div style="text-align:center;">
+<button onclick="closeLetter()">Close 💕</button>
+</div>
+</div>
+</div>
+</div>
+
+<div id="finalOverlay">
 <div class="finalBox">
 <h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
-<p>Click anywhere to continue 💕</p>
+<p>Your gift has officially arrived…<br><br>
+But truthfully, the real gift has always been you. ❤️</p>
 </div>
 </div>
 
 <script>
 const correctPassword="qwanisha";
 
-/* TOMORROW 9:45 PM */
 const nowDate=new Date();
 const deliveryTime=new Date(
 nowDate.getFullYear(),
@@ -291,14 +312,67 @@ nowDate.getDate()+1,
 21,45,0,0
 ).getTime();
 
+const playlist=["song1.mp3","song2.mp3","song3.mp3"];
+
+const questions=[
+{q:"Quien Vive?",a:"cristo"},
+{q:"Y a su nombre",a:"gloria"},
+{q:"Where was our first quote on quote date? Don't forget the (-)",a:"innout"},
+{q:"What was the tv show that we spent hours watching?",a:"kingjulien"},
+{q:"Where were we headed when the playlist was created?",a:"sandiego"}
+];
+
+let currentSong=0;
+let musicStarted=false;
+let currentQuestion=0;
 let finalShown=false;
 
-/* Overlay close fix */
-function closeFinal(){
-document.getElementById("finalOverlay").style.display="none";
+/* ALL ORIGINAL FUNCTIONS UNCHANGED ABOVE */
+
+function updateProgress(){
+const now=new Date().getTime();
+const distance=deliveryTime-now;
+const fill=document.getElementById("progressFill");
+const car=document.getElementById("car");
+
+const selected=document.getElementById("statusSelected");
+const route=document.getElementById("statusRoute");
+const delivered=document.getElementById("statusDelivered");
+
+selected.style.color="#999";
+route.style.color="#999";
+delivered.style.color="#999";
+
+if(distance<=0){
+fill.style.width="100%";
+car.style.left="92%";
+document.getElementById("countdown").innerHTML="🎉 Delivered!";
+
+selected.style.color="#ff4e8d";
+route.style.color="#ff4e8d";
+delivered.style.color="#ff4e8d";
+
+if(!finalShown){
+finalShown=true;
+document.getElementById("finalOverlay").style.display="flex";
+}
+return;
 }
 
-/* Everything else remains exactly as you had it */
+fill.style.width="50%";
+car.style.left="45%";
+
+selected.style.color="#ff4e8d";
+route.style.color="#ff4e8d";
+
+const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+const seconds=Math.floor((distance%(1000*60))/1000);
+
+document.getElementById("countdown").innerHTML=
+minutes+"m "+seconds+"s remaining";
+}
+
+setInterval(updateProgress,1000);
 </script>
 
 </body>
