@@ -6,113 +6,109 @@
 
 <style>
 body {
-    margin: 0;
-    font-family: 'Segoe UI', sans-serif;
-    background: linear-gradient(135deg, #ff4e8d, #ff9a9e);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    overflow: hidden;
+    margin:0;
+    font-family:'Segoe UI',sans-serif;
+    background:linear-gradient(135deg,#ff4e8d,#ff9a9e);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    overflow:hidden;
 }
 
-.container {
-    background: white;
-    width: 95%;
-    max-width: 520px;
-    border-radius: 20px;
-    padding: 30px;
-    text-align: center;
-    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
-    position: relative;
+.container{
+    background:white;
+    width:95%;
+    max-width:520px;
+    border-radius:20px;
+    padding:30px;
+    text-align:center;
+    box-shadow:0 20px 50px rgba(0,0,0,0.2);
+    position:relative;
 }
 
-.hidden { display: none; }
+.hidden{display:none;}
 
-button {
-    padding: 10px 20px;
-    border-radius: 10px;
-    border: none;
-    background: #ff4e8d;
-    color: white;
-    cursor: pointer;
-    margin: 10px;
-    font-weight: bold;
+button{
+    padding:10px 20px;
+    border-radius:10px;
+    border:none;
+    background:#ff4e8d;
+    color:white;
+    cursor:pointer;
+    margin:10px;
+    font-weight:bold;
 }
 
-input {
-    padding: 10px;
-    border-radius: 10px;
-    border: 1px solid #ddd;
-    width: 85%;
-}
-
-/* Progress */
-.progress-container {
-    margin-top: 20px;
-}
-
-.progress-bar {
-    width: 100%;
-    background: #eee;
-    height: 20px;
-    border-radius: 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-.progress-fill {
-    height: 100%;
-    width: 0%;
-    background: #ff4e8d;
-    transition: width 0.5s ease;
-}
-
-.progress-labels {
-    display: flex;
-    justify-content: space-between;
-    font-size: 12px;
-    margin-top: 8px;
-}
-
-.car {
-    position: absolute;
-    top: -18px;
-    font-size: 20px;
-    transition: left 0.5s ease;
+input{
+    padding:10px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    width:85%;
 }
 
 /* Modal */
-.modal {
-    position: fixed;
-    background: rgba(0,0,0,0.6);
-    width: 100%;
-    height: 100%;
-    display: none;
-    justify-content: center;
-    align-items: center;
-    z-index: 10;
+.modal{
+    position:fixed;
+    background:rgba(0,0,0,0.6);
+    width:100%;
+    height:100%;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    z-index:10;
+}
+.modal.show{display:flex;}
+.modal-box{
+    background:white;
+    padding:30px;
+    border-radius:20px;
 }
 
-.modal.show {
-    display: flex;
+/* Video */
+#scanVideo{
+    position:fixed;
+    width:100%;
+    height:100%;
+    object-fit:cover;
+    display:none;
+    z-index:20;
 }
 
-.modal-box {
-    background: white;
-    padding: 30px;
-    border-radius: 20px;
-    text-align: center;
+/* Progress */
+.progress-bar{
+    width:100%;
+    height:20px;
+    background:#eee;
+    border-radius:20px;
+    overflow:hidden;
+    position:relative;
+    margin-top:20px;
+}
+.progress-fill{
+    height:100%;
+    width:0%;
+    background:#ff4e8d;
+    transition:width .5s ease;
+}
+.car{
+    position:absolute;
+    top:-18px;
+    font-size:20px;
+    transition:left .5s ease;
 }
 
-/* Fullscreen video */
-#scanVideo {
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: none;
-    z-index: 20;
+/* Hearts */
+.floating-heart{
+    position:fixed;
+    bottom:-20px;
+    font-size:20px;
+    animation:floatUp 6s linear infinite;
+    color:rgba(255,255,255,0.6);
+}
+@keyframes floatUp{
+    from{transform:translateY(0);}
+    to{transform:translateY(-100vh);}
 }
 </style>
 </head>
@@ -129,6 +125,17 @@ input {
 <button onclick="checkPassword()">Access</button>
 </div>
 
+<div id="introSection" class="hidden">
+<h2 id="typeText"></h2>
+<button onclick="startValentine()">Continue 💌</button>
+</div>
+
+<div id="valentineSection" class="hidden">
+<h2>Will you be my Valentine?</h2>
+<button onclick="sayYes()">YES 💘</button>
+<button id="noBtn">NO 😏</button>
+</div>
+
 <div id="quizSection" class="hidden">
 <h2>Memory Verification</h2>
 <p id="questionText"></p>
@@ -139,139 +146,29 @@ input {
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Status</h2>
 
-<div class="progress-container">
 <div class="progress-bar">
 <div class="progress-fill" id="progressFill"></div>
 <div class="car" id="car">🚗</div>
 </div>
 
-<div class="progress-labels">
+<div style="display:flex;justify-content:space-between;font-size:12px;margin-top:6px;">
 <span>Gift Selected</span>
 <span>On Route</span>
 <span>Delivered</span>
 </div>
-</div>
 
 <p id="countdown"></p>
-
 </div>
 
 </div>
 
 <div id="volumeModal" class="modal">
-    <div class="modal-box">
-        <h3>🎵 Make Sure Your Volume Is Up</h3>
-        <button onclick="confirmVolume()">Okay 💕</button>
-    </div>
+<div class="modal-box">
+<h3>🎵 Make Sure Your Volume Is Up</h3>
+<button onclick="confirmVolume()">Okay 💕</button>
+</div>
 </div>
 
 <script>
-const correctPassword = "qwanisha";
-const deliveryTime = new Date("2026-02-14T19:00:00").getTime(); 
-// 🔥 CHANGE THIS DATE/TIME WHENEVER YOU WANT
-
-const questions = [
-{ q: "Quien Vive?", a: "cristo" },
-{ q: "Y a su nombre", a: "gloria" }
-];
-
-let currentQuestion = 0;
-
-/* Normalize */
-function normalize(text){
-    return text.toLowerCase().replace(/[\s\-']/g,"").trim();
-}
-
-/* Password */
-function checkPassword(){
-    const input = document.getElementById("passwordInput").value.toLowerCase();
-    if(input === correctPassword){
-        document.getElementById("volumeModal").classList.add("show");
-    }
-}
-
-function confirmVolume(){
-    document.getElementById("volumeModal").classList.remove("show");
-    loadQuestion();
-    document.getElementById("passwordSection").classList.add("hidden");
-    document.getElementById("quizSection").classList.remove("hidden");
-}
-
-/* Quiz */
-function loadQuestion(){
-    document.getElementById("questionText").innerText = questions[currentQuestion].q;
-}
-
-function checkAnswer(){
-    const userAnswer = normalize(document.getElementById("answerInput").value);
-    const correctAnswer = normalize(questions[currentQuestion].a);
-
-    if(userAnswer === correctAnswer){
-        currentQuestion++;
-        document.getElementById("answerInput").value="";
-        if(currentQuestion < questions.length){
-            loadQuestion();
-        } else {
-            launchConfetti();
-            setTimeout(playScanVideo,1200);
-        }
-    }
-}
-
-/* Confetti */
-function launchConfetti(){
-    for(let i=0;i<60;i++){
-        const c=document.createElement("div");
-        c.style.position="fixed";
-        c.style.width="8px";
-        c.style.height="8px";
-        c.style.background="#ff4e8d";
-        c.style.top="-10px";
-        c.style.left=Math.random()*100+"%";
-        document.body.appendChild(c);
-        let fall=setInterval(()=>{c.style.top=(parseFloat(c.style.top)+5)+"px";},30);
-        setTimeout(()=>{clearInterval(fall);c.remove();},1500);
-    }
-}
-
-/* Scan Video */
-function playScanVideo(){
-    const video=document.getElementById("scanVideo");
-    video.style.display="block";
-    video.play();
-    video.onended=()=>{
-        video.style.display="none";
-        showTracker();
-    };
-}
-
-/* Tracker */
-function showTracker(){
-    document.getElementById("quizSection").classList.add("hidden");
-    document.getElementById("trackerSection").classList.remove("hidden");
-    updateProgress();
-}
-
-function updateProgress(){
-    const now = new Date().getTime();
-    const total = deliveryTime - now;
-    const fill = document.getElementById("progressFill");
-    const car = document.getElementById("car");
-
-    if(now >= deliveryTime){
-        fill.style.width="100%";
-        car.style.left="95%";
-        document.getElementById("countdown").innerHTML="🎉 Delivered!";
-        return;
-    }
-
-    fill.style.width="50%";
-    car.style.left="50%";
-    document.getElementById("countdown").innerHTML="On Route 🚗";
-}
-
-setInterval(updateProgress,1000);
-</script>
-
-</body>
-</html>
+const correctPassword="qwanisha";
+const deliveryTime=new Date("2026-02-14T19:00:00").ge
