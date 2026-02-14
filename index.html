@@ -112,6 +112,310 @@ font-size:18px;
 transition:left .5s ease;
 }
 
+/* Countdown */
+.countdownText{
+margin-top:10px;
+font-weight:bold;
+color:#ff4e8d;
+}
+
+/* Hearts */
+.floating-heart{
+position:fixed;
+bottom:-20px;
+font-size:20px;
+animation:floatUp 6s linear infinite;
+color:rgba(255,255,255,0.6);
+z-index:1;
+}
+
+@keyframes floatUp{
+from{transform:translateY(0);}
+to{transform:translateY(-100vh);}
+}
+
+/* Envelope */
+#letterModal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:25;
+}
+
+.envelope{
+width:300px;
+height:200px;
+background:#fff;
+position:relative;
+border-radius:10px;
+box-shadow:0 10px 30px rgba(0,0,0,0.4);
+text-align:center;
+}
+
+.flap{
+position:absolute;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:#ffe6ea;
+clip-path:polygon(0 0,100% 0,50% 60%);
+transition:transform 1s ease;
+transform-origin:top;
+}
+
+.envelope.open .flap{
+transform:rotateX(180deg);
+}
+
+.seal{
+width:60px;
+height:60px;
+background:#c1121f;
+border-radius:50%;
+position:absolute;
+top:70px;
+left:50%;
+transform:translateX(-50%);
+display:flex;
+justify-content:center;
+align-items:center;
+color:white;
+font-weight:bold;
+cursor:pointer;
+box-shadow:0 5px 15px rgba(0,0,0,0.4);
+}
+
+.letterContent{
+display:none;
+padding:20px;
+font-size:14px;
+text-align:left;
+}
+
+.envelope.open .letterContent{
+display:block;
+}
+
+/* Final overlay */
+#finalOverlay{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.7);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:20;
+}
+
+.finalBox{
+background:white;
+padding:40px;
+border-radius:20px;
+max-width:500px;
+text-align:center;
+}
+</style>
+</head>
+<body>
+
+<audio id="bgMusic"></audio>
+
+<div id="videoWrapper">
+<video id="scanVideo" src="Scan.mp4" muted playsinline></video>
+</div>
+
+<div class="container">
+
+<div style="font-size:13px;color:#ff4e8d;margin-bottom:10px;font-weight:bold;">
+🎵 Now Playing: Dumptruck Playlist
+</div>
+
+<div id="passwordSection">
+<h2>🔐 Secure Access</h2>
+<input type="password" id="passwordInput">
+<button onclick="checkPassword()">Access</button>
+</div>
+
+<div id="trackerSection" class="hidden">
+<h2>📦 Shipment Status</h2>
+
+<p id="estimatedDate"></p>
+
+<div class="progress-bar">
+<div class="progress-fill" id="progressFill"></div>
+<div class="car" id="car">🚗</div>
+</div>
+
+<p class="countdownText" id="countdown"></p>
+
+<button onclick="openLetter()">Open Sealed Letter 💌</button>
+
+</div>
+
+</div>
+
+<div id="letterModal">
+<div class="envelope" id="envelope">
+<div class="flap"></div>
+<div class="seal" onclick="breakSeal()">💝</div>
+<div class="letterContent">
+<p>
+While your package makes its way to you…<br><br>
+Thank you for every moment and memory.<br><br>
+You mean more than you know. ❤️
+</p>
+<button onclick="closeLetter()">Close 💕</button>
+</div>
+</div>
+</div>
+
+<div id="finalOverlay">
+<div class="finalBox">
+<h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
+<p>Your gift has officially arrived…<br><br>
+But truthfully, the real gift has always been you. ❤️</p>
+</div>
+</div>
+
+<script>
+const deliveryTime = new Date("2026-02-13T21:30:00").getTime();
+
+document.getElementById("estimatedDate").innerText =
+"Estimated Delivery: " + new Date(deliveryTime).toLocaleString();
+
+function updateProgress(){
+const now = new Date().getTime();
+const distance = deliveryTime - now;
+
+const fill = document.getElementById("progressFill");
+const car = document.getElementById("car");
+
+if(distance <= 0){
+fill.style.width="100%";
+car.style.left="92%";
+document.getElementById("countdown").innerHTML="🎉 Delivered!";
+document.getElementById("finalOverlay").style.display="flex";
+return;
+}
+
+fill.style.width="50%";
+car.style.left="45%";
+
+const days = Math.floor(distance/(1000*60*60*24));
+const hours = Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+const minutes = Math.floor((distance%(1000*60*60))/(1000*60));
+const seconds = Math.floor((distance%(1000*60))/1000);
+
+document.getElementById("countdown").innerHTML =
+days+"d "+hours+"h "+minutes+"m "+seconds+"s remaining";
+}
+
+setInterval(updateProgress,1000);
+
+function openLetter(){
+document.getElementById("letterModal").style.display="flex";
+}
+
+function closeLetter(){
+document.getElementById("letterModal").style.display="none";
+document.getElementById("envelope").classList.remove("open");
+}
+
+function breakSeal(){
+document.getElementById("envelope").classList.add("open");
+}
+</script>
+
+</body>
+</html>
+background:#ff4e8d;
+color:white;
+cursor:pointer;
+margin:10px;
+font-weight:bold;
+}
+
+input{
+padding:10px;
+border-radius:10px;
+border:1px solid #ddd;
+width:85%;
+}
+
+/* Volume Modal */
+#volumeModal{
+position:fixed;
+top:0;
+left:0;
+width:100%;
+height:100%;
+background:rgba(0,0,0,0.6);
+display:none;
+justify-content:center;
+align-items:center;
+z-index:15;
+}
+
+.modalBox{
+background:white;
+padding:30px;
+border-radius:20px;
+text-align:center;
+}
+
+/* Video */
+#videoWrapper{
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+width:80%;
+max-width:600px;
+display:none;
+z-index:10;
+}
+
+#scanVideo{
+width:100%;
+border-radius:15px;
+box-shadow:0 15px 40px rgba(0,0,0,0.4);
+}
+
+/* Progress */
+.progress-bar{
+width:100%;
+height:25px;
+background:#eee;
+border-radius:25px;
+overflow:hidden;
+position:relative;
+margin-top:20px;
+}
+
+.progress-fill{
+height:100%;
+width:0%;
+background:#ff4e8d;
+transition:width .5s ease;
+}
+
+.car{
+position:absolute;
+top:4px;
+font-size:18px;
+transition:left .5s ease;
+}
+
 /* Hearts */
 .floating-heart{
 position:fixed;
