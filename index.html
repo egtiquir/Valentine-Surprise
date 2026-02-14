@@ -112,7 +112,6 @@ font-size:18px;
 transition:left .5s ease;
 }
 
-/* Countdown */
 .countdownText{
 margin-top:10px;
 font-weight:bold;
@@ -149,8 +148,8 @@ z-index:25;
 }
 
 .envelope{
-width:300px;
-height:200px;
+width:320px;
+height:220px;
 background:#fff;
 position:relative;
 border-radius:10px;
@@ -180,7 +179,7 @@ height:60px;
 background:#c1121f;
 border-radius:50%;
 position:absolute;
-top:70px;
+top:75px;
 left:50%;
 transform:translateX(-50%);
 display:flex;
@@ -197,6 +196,8 @@ display:none;
 padding:20px;
 font-size:14px;
 text-align:left;
+max-height:180px;
+overflow:auto;
 }
 
 .envelope.open .letterContent{
@@ -240,12 +241,36 @@ text-align:center;
 🎵 Now Playing: Dumptruck Playlist
 </div>
 
+<!-- PASSWORD -->
 <div id="passwordSection">
 <h2>🔐 Secure Access</h2>
 <input type="password" id="passwordInput">
 <button onclick="checkPassword()">Access</button>
 </div>
 
+<!-- INTRO -->
+<div id="introSection" class="hidden">
+<h2 id="typeText"></h2>
+<button onclick="startValentine()">Continue 💌</button>
+</div>
+
+<!-- VALENTINE -->
+<div id="valentineSection" class="hidden">
+<h2>Will you be my Valentine?</h2>
+<button onclick="sayYes()">YES 💘</button>
+<button id="noBtn">NO 😏</button>
+</div>
+
+<!-- QUIZ -->
+<div id="quizSection" class="hidden">
+<h2>Memory Verification</h2>
+<p id="questionText"></p>
+<input type="text" id="answerInput">
+<br>
+<button onclick="checkAnswer()">Submit</button>
+</div>
+
+<!-- TRACKER -->
 <div id="trackerSection" class="hidden">
 <h2>📦 Shipment Status</h2>
 
@@ -259,23 +284,48 @@ text-align:center;
 <p class="countdownText" id="countdown"></p>
 
 <button onclick="openLetter()">Open Sealed Letter 💌</button>
-
 </div>
 
 </div>
 
+<!-- Volume Popup -->
+<div id="volumeModal">
+<div class="modalBox">
+<h3>🎵 Make Sure Your Volume Is Up</h3>
+<button onclick="confirmVolume()">Okay 💕</button>
+</div>
+</div>
+
+<!-- Envelope -->
 <div id="letterModal">
 <div class="envelope" id="envelope">
 <div class="flap"></div>
 <div class="seal" onclick="breakSeal()">💝</div>
+
 <div class="letterContent">
 <p>
 While your package makes its way to you…<br><br>
-So hiiii love its your grumpy boyfriend here, i wanted to say i love you and sorry for all the mispelled grammar im rushing this a bit because of time, but wanted to write you a nice letter like youve done for me. So whats so great about katherine hmmmmm where do i start for starters youre very energetic very enthusiatic about things and the best of all is how great you are in the christian life. Also its awesome i got a smart girlfriend who can do so much reading and pass her classes even getting honors... its an honor to meet you ahhh but i digress thank you for these past 3 years this is our 3rd valentines 
-  this ones a bit different because of our responsibilities but we make it work, LOVE YOU. ❤️<br><br>
-  – Yours Truly, Quack ❤️
+
+So hiiii love, it's your grumpy boyfriend here. I wanted to say I love you and sorry for all the misspelled grammar.
+I'm rushing this a bit because of time, but I wanted to write you a nice letter like you've done for me.<br><br>
+
+So what's so great about Katherine? Hmmmmm where do I start…
+For starters, you're very energetic, very enthusiastic about things, and the best of all is how great you are in the Christian life.<br><br>
+
+Also it's awesome I got a smart girlfriend who can do so much reading and pass her classes — even getting honors.
+It's an honor to meet you… ahhh but I digress.<br><br>
+
+Thank you for these past 3 years. This is our 3rd Valentine’s.
+This one’s a bit different because of our responsibilities, but we make it work.<br><br>
+
+LOVE YOU. ❤️<br><br>
+
+– Yours Truly, Quack
 </p>
+
+<div style="text-align:center;">
 <button onclick="closeLetter()">Close 💕</button>
+</div>
 </div>
 </div>
 </div>
@@ -284,41 +334,176 @@ So hiiii love its your grumpy boyfriend here, i wanted to say i love you and sor
 <div class="finalBox">
 <h2 style="color:#ff4e8d;">💝 Special Delivery</h2>
 <p>Your gift has officially arrived…<br><br>
-I hope you enjoyed this project... HE HE HE i write this as you are waiting for... and nooo baby you not getting fat
-  now chat gpt wrote this and its cringey so ill leave it .....But truthfully, the real gift has always been you. ❤️</p>
+But truthfully, the real gift has always been you. ❤️</p>
 </div>
 </div>
 
 <script>
-const deliveryTime = new Date("2026-02-13T21:30:00").getTime();
+const correctPassword="qwanisha";
+const deliveryTime=new Date("2026-02-13T21:30:00").getTime();
 
+const playlist=["song1.mp3","song2.mp3","song3.mp3"];
+
+const questions=[
+{q:"Quien Vive?",a:"cristo"},
+{q:"Y a su nombre",a:"gloria"},
+{q:"Where was our first quote on quote date? Don't forget the (-)",a:"in-n-out"},
+{q:"What was the tv show that we spent hours watching?",a:"king julien"},
+{q:"Where were we headed when the playlist was created?",a:"san diego"}
+];
+
+let currentSong=0;
+let musicStarted=false;
+let currentQuestion=0;
+let currentStage="password";
+let finalShown=false;
+
+/* PASSWORD */
+function checkPassword(){
+if(document.getElementById("passwordInput").value.toLowerCase()===correctPassword){
+document.getElementById("volumeModal").style.display="flex";
+}
+}
+
+function confirmVolume(){
+document.getElementById("volumeModal").style.display="none";
+startPlaylist();
+showIntro();
+}
+
+function startPlaylist(){
+if(musicStarted)return;
+musicStarted=true;
+const music=document.getElementById("bgMusic");
+music.src=playlist[currentSong];
+music.volume=0.3;
+music.play();
+music.addEventListener("ended",()=>{
+currentSong=(currentSong+1)%playlist.length;
+music.src=playlist[currentSong];
+music.play();
+});
+}
+
+function showIntro(){
+document.getElementById("passwordSection").classList.add("hidden");
+document.getElementById("introSection").classList.remove("hidden");
+typeWriter();
+}
+
+function typeWriter(){
+const text="Before delivery can proceed... one important question must be answered.";
+const el=document.getElementById("typeText");
+el.innerHTML="";
+let i=0;
+(function type(){
+if(i<text.length){
+el.innerHTML+=text.charAt(i++);
+setTimeout(type,35);
+}
+})();
+}
+
+function startValentine(){
+document.getElementById("introSection").classList.add("hidden");
+document.getElementById("valentineSection").classList.remove("hidden");
+}
+
+document.getElementById("noBtn").addEventListener("mouseover",function(){
+this.style.position="absolute";
+this.style.left=Math.random()*70+"%";
+this.style.top=Math.random()*70+"%";
+});
+
+function sayYes(){
+document.getElementById("valentineSection").classList.add("hidden");
+document.getElementById("quizSection").classList.remove("hidden");
+loadQuestion();
+}
+
+function loadQuestion(){
+document.getElementById("questionText").innerText=questions[currentQuestion].q;
+}
+
+function checkAnswer(){
+const input=document.getElementById("answerInput");
+if(input.value.toLowerCase().replace(/[^a-z0-9]/g,"")===
+questions[currentQuestion].a.replace(/[^a-z0-9]/g,"")){
+input.value="";
+if(currentQuestion===questions.length-1){
+launchConfetti();
+playScanVideo();
+}else{
+currentQuestion++;
+loadQuestion();
+}
+}else{
+alert("Wrong answer cutie 😌");
+}
+}
+
+function launchConfetti(){
+for(let i=0;i<40;i++){
+const d=document.createElement("div");
+d.style.position="fixed";
+d.style.width="6px";
+d.style.height="6px";
+d.style.background="#ff4e8d";
+d.style.top="-10px";
+d.style.left=Math.random()*100+"%";
+document.body.appendChild(d);
+let fall=setInterval(()=>{d.style.top=(parseFloat(d.style.top)+5)+"px";},30);
+setTimeout(()=>{clearInterval(fall);d.remove();},1000);
+}
+}
+
+function playScanVideo(){
+const wrapper=document.getElementById("videoWrapper");
+const v=document.getElementById("scanVideo");
+wrapper.style.display="block";
+v.currentTime=0;
+v.play();
+v.onended=()=>{
+wrapper.style.display="none";
+showTracker();
+};
+}
+
+function showTracker(){
+document.getElementById("quizSection").classList.add("hidden");
+document.getElementById("trackerSection").classList.remove("hidden");
 document.getElementById("estimatedDate").innerText =
 "Estimated Delivery: " + new Date(deliveryTime).toLocaleString();
+updateProgress();
+}
 
 function updateProgress(){
-const now = new Date().getTime();
-const distance = deliveryTime - now;
+const now=new Date().getTime();
+const distance=deliveryTime-now;
 
-const fill = document.getElementById("progressFill");
-const car = document.getElementById("car");
+const fill=document.getElementById("progressFill");
+const car=document.getElementById("car");
 
-if(distance <= 0){
+if(distance<=0){
 fill.style.width="100%";
 car.style.left="92%";
 document.getElementById("countdown").innerHTML="🎉 Delivered!";
+if(!finalShown){
+finalShown=true;
 document.getElementById("finalOverlay").style.display="flex";
+}
 return;
 }
 
 fill.style.width="50%";
 car.style.left="45%";
 
-const days = Math.floor(distance/(1000*60*60*24));
-const hours = Math.floor((distance%(1000*60*60*24))/(1000*60*60));
-const minutes = Math.floor((distance%(1000*60*60))/(1000*60));
-const seconds = Math.floor((distance%(1000*60))/1000);
+const days=Math.floor(distance/(1000*60*60*24));
+const hours=Math.floor((distance%(1000*60*60*24))/(1000*60*60));
+const minutes=Math.floor((distance%(1000*60*60))/(1000*60));
+const seconds=Math.floor((distance%(1000*60))/1000);
 
-document.getElementById("countdown").innerHTML =
+document.getElementById("countdown").innerHTML=
 days+"d "+hours+"h "+minutes+"m "+seconds+"s remaining";
 }
 
@@ -336,6 +521,15 @@ document.getElementById("envelope").classList.remove("open");
 function breakSeal(){
 document.getElementById("envelope").classList.add("open");
 }
+
+setInterval(()=>{
+const h=document.createElement("div");
+h.innerHTML="💖";
+h.className="floating-heart";
+h.style.left=Math.random()*100+"%";
+document.body.appendChild(h);
+setTimeout(()=>h.remove(),6000);
+},1500);
 </script>
 
 </body>
