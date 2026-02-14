@@ -122,7 +122,7 @@ input {
 <div class="container">
 
 <div class="logo" onclick="adminTap()">SVP Secure Delivery</div>
-<div class="now-playing">🎵 Now Playing: Dumptrick Playlist</div>
+<div class="now-playing">🎵 Now Playing: Dumptruck Playlist</div>
 
 <!-- PASSWORD -->
 <div id="passwordSection">
@@ -168,11 +168,11 @@ input {
 
 </div>
 
-<!-- VOLUME MODAL -->
+<!-- MODAL -->
 <div id="volumeModal" class="modal">
     <div class="modal-box">
         <h3>🎵 Make Sure Your Volume Is Up</h3>
-        <p>This delivery includes audio.</p>
+        <p>*Hint* *Hint* *wink* *wink*</p>
         <button onclick="confirmVolume()">Okay 💕</button>
     </div>
 </div>
@@ -187,11 +187,11 @@ const playlist = [
 ];
 
 const questions = [
-{ q: "Where did we first meet?", a: "library" },
-{ q: "First date location?", a: "beach" },
-{ q: "Our song?", a: "perfect" },
-{ q: "Favorite food together?", a: "tacos" },
-{ q: "Inside joke word?", a: "pineapple" }
+{ q: "Quien Vive?", a: "cristo" },
+{ q: "Y a su nombre", a: "gloria" },
+{ q: "Where was our first quote on quote date? Or well first place we went to together, don't forget to add the(-)", a: "in-n-out" },
+{ q: "What was the tv show that we spent hours watching?", a: "king julien" },
+{ q: "Where were we headed to when the playlist you're listening to was created?", a: "san diego" }
 ];
 
 let currentSong = 0;
@@ -199,6 +199,11 @@ let musicStarted = false;
 let currentQuestion = parseInt(localStorage.getItem("currentQuestion")) || 0;
 let countdownInterval;
 let adminClicks = 0;
+
+/* NORMALIZER */
+function normalize(text){
+    return text.toLowerCase().replace(/[\s\-']/g,"").trim();
+}
 
 /* PASSWORD */
 function checkPassword(){
@@ -308,17 +313,44 @@ function loadQuestion(){
 }
 
 function checkAnswer(){
-    const answer = document.getElementById("answerInput").value.toLowerCase();
-    if(answer === questions[currentQuestion].a){
+    const userAnswer = normalize(document.getElementById("answerInput").value);
+    const correctAnswer = normalize(questions[currentQuestion].a);
+
+    if(userAnswer === correctAnswer){
         currentQuestion++;
         localStorage.setItem("currentQuestion", currentQuestion);
         document.getElementById("answerInput").value="";
         if(currentQuestion < questions.length){
             loadQuestion();
         } else {
-            showTracker();
+            launchConfetti();
+            setTimeout(showTracker, 1200);
         }
     } else alert("Wrong answer cutie 😌");
+}
+
+/* CONFETTI */
+function launchConfetti(){
+    for(let i=0;i<60;i++){
+        const confetti = document.createElement("div");
+        confetti.style.position="fixed";
+        confetti.style.width="8px";
+        confetti.style.height="8px";
+        confetti.style.background="#ff4e8d";
+        confetti.style.top="-10px";
+        confetti.style.left=Math.random()*100+"%";
+        document.body.appendChild(confetti);
+
+        let fall = setInterval(()=>{
+            confetti.style.top =
+            (parseFloat(confetti.style.top)+5)+"px";
+        },30);
+
+        setTimeout(()=>{
+            clearInterval(fall);
+            confetti.remove();
+        },1500);
+    }
 }
 
 /* TRACKER */
@@ -328,7 +360,7 @@ function showTracker(){
 
     if(!localStorage.getItem("trackingNumber")){
         localStorage.setItem("trackingNumber",
-        "SVP" + Math.floor(Math.random()*1000000000));
+        "SVP"+Math.floor(Math.random()*1000000000));
     }
 
     document.getElementById("trackingNumber").innerText =
@@ -377,13 +409,6 @@ setInterval(()=>{
     document.body.appendChild(heart);
     setTimeout(()=>heart.remove(),6000);
 },1500);
-
-/* RESTORE */
-window.onload=function(){
-    if(localStorage.getItem("unlocked")){
-        document.getElementById("volumeModal").classList.add("show");
-    }
-}
 </script>
 
 </body>
